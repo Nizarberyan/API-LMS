@@ -55,7 +55,7 @@ export function DashboardSidebar({
       baseItems.push(
         { href: "/dashboard/quizzes", label: "Quizzes", icon: ListChecks },
         { href: "/dashboard/formateur/students", label: "Suivi Apprenants", icon: BarChart3 },
-        { href: "/dashboard/instructor", label: "Instructor Space", icon: Briefcase },
+        { href: "/dashboard/teacher", label: "My Courses", icon: Briefcase },
         { href: "/dashboard/courses", label: "Catalog", icon: BookOpen } // Teachers can view catalog
       );
     }

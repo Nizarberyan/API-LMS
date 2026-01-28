@@ -53,6 +53,7 @@ export default function TeacherDashboardPage() {
   const [statusFilter, setStatusFilter] = useState<
     "all" | "published" | "draft"
   >("all");
+  const [debugLogs, setDebugLogs] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,11 +62,39 @@ export default function TeacherDashboardPage() {
           api.get("/auth/profile"),
           getCourses(),
         ]);
+        console.log("RAW coursesRes:", coursesRes);
         setUser(profileRes.data);
+
+        // Debugging Logic
+        const logs = coursesRes.map((c: any) => {
+          const teacherId = typeof c.teacher === "string" ? c.teacher : c.teacher?._id;
+          return {
+            id: c._id,
+            title: c.title,
+            teacherVal: c.teacher,
+            extractedTeacherId: teacherId,
+            currentUserId: profileRes.data._id,
+            isMatch: String(teacherId) === String(profileRes.data._id)
+          };
+        });
+        setDebugLogs(logs);
+
         // Filter to show only this teacher's courses
-        const myCourses = coursesRes.filter(
-          (course) => course.teacher?._id === profileRes.data._id,
-        );
+        console.log('Fetching data for teacher dashboard...');
+        const myCourses = coursesRes.filter((course) => {
+          const teacherId =
+            typeof course.teacher === "string"
+              ? course.teacher
+              : course.teacher?._id;
+          return String(teacherId) === String(profileRes.data._id);
+        });
+
+        console.log("Teacher Dashboard Debug:", {
+          userId: profileRes.data._id,
+          totalCourses: coursesRes.length,
+          myCoursesCount: myCourses.length,
+        });
+
         setCourses(myCourses);
       } catch (err) {
         console.error("Failed to fetch data:", err);
@@ -135,6 +164,27 @@ export default function TeacherDashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* DEBUG PANEL - REMOVE AFTER FIXING */}
+      <Card className="bg-zinc-900 border-zinc-700">
+        <CardHeader><CardTitle className="text-sm text-white">Debug Info (Visible only for debugging)</CardTitle></CardHeader>
+        <CardContent>
+          <div className="text-xs font-mono space-y-1 max-h-60 overflow-y-auto text-zinc-200">
+            <p><strong className="text-white">CurrentUser ID:</strong> {user?._id}</p>
+            <div className="mt-2 border-t border-zinc-700 pt-2">
+              {debugLogs.length === 0 ? <p className="text-zinc-400">No courses fetched from API</p> : null}
+              {debugLogs.map((log: any) => (
+                <div key={log.id} className={log.isMatch ? "text-green-400 font-bold" : "text-red-400"}>
+                  [{log.isMatch ? 'MATCH' : 'NO MATCH'}] Course: {log.title}
+                  <br />TeacherID: {String(log.extractedTeacherId)}
+                  <br />UserID: {String(log.currentUserId)}
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      {/* END DEBUG PANEL */}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">My Courses</h1>
