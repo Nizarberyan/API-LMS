@@ -62,12 +62,12 @@ export default function RegisterPage() {
         // Set the token for subsequent requests immediately
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      const errorMessage =
-        err instanceof AxiosError
-          ? err.response?.data?.message || err.message
-          : "Registration failed";
-      setError(Array.isArray(errorMessage) ? errorMessage[0] : errorMessage);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        setError(`Registration failed. ${err.response?.data?.message}`);
+      } else {
+        setError("Registration failed");
+      }
     } finally {
       setIsLoading(false);
     }

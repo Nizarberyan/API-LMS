@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
     },
   });
 
-  async function onSubmit(values: ForgotPasswordValues) {
+  async function onSubmit() {
     setIsLoading(true);
     setError(null);
 
@@ -54,8 +54,12 @@ export default function ForgotPasswordPage() {
       // For now, simulate success
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setIsSubmitted(true);
-    } catch (err: any) {
-      setError("Failed to send reset email. Please try again.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(`Failed to send reset email. Please try again. ${err.message}`);
+      } else {
+        setError(`Failed to send reset email. Please try again.`);
+      }
     } finally {
       setIsLoading(false);
     }

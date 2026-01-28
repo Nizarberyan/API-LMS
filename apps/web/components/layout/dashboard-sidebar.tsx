@@ -11,7 +11,7 @@ import {
   Briefcase,
   Shield,
   ListChecks,
-  BarChart3
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -23,9 +23,7 @@ interface DashboardSidebarProps {
   userRole: string;
 }
 
-export function DashboardSidebar({
-  userRole,
-}: DashboardSidebarProps) {
+export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -48,27 +46,43 @@ export function DashboardSidebar({
     ];
 
     if (userRole === Role.STUDENT) {
-      baseItems.push({ href: "/dashboard/courses", label: "My Learning", icon: GraduationCap });
+      baseItems.push({
+        href: "/dashboard/courses",
+        label: "My Learning",
+        icon: GraduationCap,
+      });
     }
 
     if (userRole === Role.TEACHER) {
       baseItems.push(
         { href: "/dashboard/quizzes", label: "Quizzes", icon: ListChecks },
-        { href: "/dashboard/formateur/students", label: "Suivi Apprenants", icon: BarChart3 },
+        {
+          href: "/dashboard/formateur/students",
+          label: "Suivi Apprenants",
+          icon: BarChart3,
+        },
         { href: "/dashboard/teacher", label: "My Courses", icon: Briefcase },
-        { href: "/dashboard/courses", label: "Catalog", icon: BookOpen } // Teachers can view catalog
+        { href: "/dashboard/courses", label: "Catalog", icon: BookOpen }, // Teachers can view catalog
       );
     }
 
     if (userRole === Role.ADMIN) {
       baseItems.push(
         { href: "/dashboard/admin/users", label: "Utilisateurs", icon: User },
-        { href: "/dashboard/admin/courses", label: "Cours", icon: GraduationCap },
-        { href: "/dashboard/admin", label: "Administration", icon: Shield }
+        {
+          href: "/dashboard/admin/courses",
+          label: "Cours",
+          icon: GraduationCap,
+        },
+        { href: "/dashboard/admin", label: "Administration", icon: Shield },
       );
     }
 
-    baseItems.push({ href: "/dashboard/profile", label: "Profile", icon: User });
+    baseItems.push({
+      href: "/dashboard/profile",
+      label: "Profile",
+      icon: User,
+    });
     return baseItems;
   };
 
@@ -88,7 +102,8 @@ export function DashboardSidebar({
       <nav className="flex-1 space-y-1 p-4">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <Button
               key={item.href}

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Quiz } from '@/lib/quiz-api';
-import { Clock, Target, Lock, CheckCircle2, AlertCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Quiz } from "@/lib/quiz-api";
+import { Clock, Target, Lock, CheckCircle2, AlertCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface QuizCardProps {
   quiz: Quiz;
@@ -14,31 +14,34 @@ interface QuizCardProps {
   isLocked?: boolean;
 }
 
-export default function QuizCard({ 
-  quiz, 
-  courseId, 
+export default function QuizCard({
+  quiz,
+  courseId,
   moduleId,
   userAttempts = 0,
   bestScore,
   isPassed = false,
-  isLocked = false
+  isLocked = false,
 }: QuizCardProps) {
   const router = useRouter();
 
   const handleStartQuiz = () => {
     if (isLocked) return;
-    router.push(`/dashboard/apprenant/courses/${courseId}/modules/${moduleId}/quizzes/${quiz._id}`);
+    router.push(
+      `/dashboard/apprenant/courses/${courseId}/modules/${moduleId}/quizzes/${quiz._id}`,
+    );
   };
 
   return (
-    <div 
+    <div
       className={`
         bg-white rounded-xl border-2 p-6 transition-all
-        ${isLocked 
-          ? 'border-gray-200 opacity-60 cursor-not-allowed' 
-          : isPassed
-            ? 'border-green-200 hover:border-green-300 cursor-pointer hover:shadow-lg'
-            : 'border-gray-200 hover:border-blue-300 cursor-pointer hover:shadow-lg'
+        ${
+          isLocked
+            ? "border-gray-200 opacity-60 cursor-not-allowed"
+            : isPassed
+              ? "border-green-200 hover:border-green-300 cursor-pointer hover:shadow-lg"
+              : "border-gray-200 hover:border-blue-300 cursor-pointer hover:shadow-lg"
         }
       `}
       onClick={handleStartQuiz}
@@ -73,7 +76,9 @@ export default function QuizCard({
         <div className="flex items-center gap-3 text-sm">
           <div className="flex items-center gap-2 text-gray-600">
             <Target className="w-4 h-4" />
-            <span>Score minimum: <strong>{quiz.passingScore}%</strong></span>
+            <span>
+              Score minimum: <strong>{quiz.passingScore}%</strong>
+            </span>
           </div>
         </div>
 
@@ -83,11 +88,15 @@ export default function QuizCard({
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2 text-gray-600">
                 <Clock className="w-4 h-4" />
-                <span>Tentatives: <strong>{userAttempts}</strong></span>
+                <span>
+                  Tentatives: <strong>{userAttempts}</strong>
+                </span>
               </div>
-              
+
               {bestScore !== undefined && (
-                <div className={`font-semibold ${isPassed ? 'text-green-600' : 'text-orange-600'}`}>
+                <div
+                  className={`font-semibold ${isPassed ? "text-green-600" : "text-orange-600"}`}
+                >
                   Meilleur: {bestScore}%
                 </div>
               )}
@@ -96,26 +105,27 @@ export default function QuizCard({
         )}
 
         {/* Status Message */}
-        <div className={`
+        <div
+          className={`
           mt-4 p-3 rounded-lg text-sm font-medium
-          ${isLocked 
-            ? 'bg-gray-100 text-gray-700'
-            : isPassed
-              ? 'bg-green-50 text-green-700'
-              : userAttempts > 0
-                ? 'bg-orange-50 text-orange-700'
-                : 'bg-blue-50 text-blue-700'
+          ${
+            isLocked
+              ? "bg-gray-100 text-gray-700"
+              : isPassed
+                ? "bg-green-50 text-green-700"
+                : userAttempts > 0
+                  ? "bg-orange-50 text-orange-700"
+                  : "bg-blue-50 text-blue-700"
           }
-        `}>
-          {isLocked ? (
-            '🔒 Quiz verrouillé - Complétez les modules précédents'
-          ) : isPassed ? (
-            '✅ Quiz réussi ! Vous pouvez le refaire pour améliorer votre score'
-          ) : userAttempts > 0 ? (
-            '⚠️ Score insuffisant - Réessayez pour valider'
-          ) : (
-            '▶️ Cliquez pour commencer le quiz'
-          )}
+        `}
+        >
+          {isLocked
+            ? "🔒 Quiz verrouillé - Complétez les modules précédents"
+            : isPassed
+              ? "✅ Quiz réussi ! Vous pouvez le refaire pour améliorer votre score"
+              : userAttempts > 0
+                ? "⚠️ Score insuffisant - Réessayez pour valider"
+                : "▶️ Cliquez pour commencer le quiz"}
         </div>
       </div>
     </div>

@@ -24,7 +24,7 @@ import { User } from '../users/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   register(@Body() registerDto: RegisterDto) {
@@ -79,7 +79,10 @@ export class AuthController {
     @CurrentUser() user: User,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    return this.authService.changePassword(user._id.toString(), changePasswordDto);
+    return this.authService.changePassword(
+      user._id.toString(),
+      changePasswordDto,
+    );
   }
 
   @Post('profile/avatar')

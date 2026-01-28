@@ -1,19 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Course, formateurApi } from '@/lib/formateur-api';
-import { 
-  BookOpen, 
-  Users, 
-  Loader2,
-  Plus,
-  GraduationCap
-} from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Course, formateurApi } from "@/lib/formateur-api";
+import { BookOpen, Users, Loader2, Plus, GraduationCap } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import CourseCard from '@/components/formateur/CourseCard';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import CourseCard from "@/components/formateur/CourseCard";
 
 export default function StudentsPage() {
   const router = useRouter();
@@ -21,11 +15,12 @@ export default function StudentsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const fetchCourses = async () => {
     if (!token) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
@@ -36,7 +31,9 @@ export default function StudentsPage() {
       const data = await formateurApi.getMyCourses();
       setCourses(data);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erreur lors du chargement des cours');
+      setError(
+        err.response?.data?.message || "Erreur lors du chargement des cours",
+      );
     } finally {
       setLoading(false);
     }
@@ -105,11 +102,14 @@ export default function StudentsPage() {
                 Aucun cours trouvé
               </h3>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                Vous n'avez pas encore créé de cours. Commencez par créer votre premier cours pour suivre vos étudiants.
+                Vous n'avez pas encore créé de cours. Commencez par créer votre
+                premier cours pour suivre vos étudiants.
               </p>
               <Button
                 size="lg"
-                onClick={() => router.push('/dashboard/formateur/courses/create')}
+                onClick={() =>
+                  router.push("/dashboard/formateur/courses/create")
+                }
                 className="gap-2"
               >
                 <Plus className="w-5 h-5" />
@@ -125,17 +125,21 @@ export default function StudentsPage() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <BookOpen className="w-5 h-5 text-primary" />
-                <span className="font-semibold text-foreground">{courses.length}</span>
-                <span>cours disponible{courses.length > 1 ? 's' : ''}</span>
+                <span className="font-semibold text-foreground">
+                  {courses.length}
+                </span>
+                <span>cours disponible{courses.length > 1 ? "s" : ""}</span>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {courses.map((course) => (
                 <CourseCard
                   key={course._id}
                   course={course}
-                  onClick={() => router.push(`/dashboard/formateur/students/${course._id}`)}
+                  onClick={() =>
+                    router.push(`/dashboard/formateur/students/${course._id}`)
+                  }
                 />
               ))}
             </div>

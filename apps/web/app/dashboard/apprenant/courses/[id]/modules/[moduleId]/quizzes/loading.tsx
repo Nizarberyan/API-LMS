@@ -1,4 +1,4 @@
-import { FileText } from 'lucide-react';
+import { FileText } from "lucide-react";
 
 export default function Loading() {
   return (
@@ -20,7 +20,7 @@ export default function Loading() {
         {/* Quiz Cards Skeleton */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div 
+            <div
               key={i}
               className="bg-white border border-gray-200 rounded-lg p-6 animate-pulse"
             >

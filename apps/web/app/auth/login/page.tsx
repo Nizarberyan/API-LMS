@@ -61,12 +61,12 @@ export default function LoginPage() {
           router.push("/dashboard");
         }
       }
-    } catch (err: any) {
-      const errorMessage =
-        err instanceof AxiosError
-          ? err.response?.data?.message || err.message
-          : "Login failed";
-      setError(Array.isArray(errorMessage) ? errorMessage[0] : errorMessage);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        setError(`Login failed. ${err.response?.data?.message}`);
+      } else {
+        setError("Login failed");
+      }
     } finally {
       setIsLoading(false);
     }

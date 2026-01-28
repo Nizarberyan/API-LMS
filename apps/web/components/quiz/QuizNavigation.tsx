@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Question } from '@/lib/quiz-api';
-import { CheckCircle2, Circle } from 'lucide-react';
+import { Question } from "@/lib/quiz-api";
+import { CheckCircle2, Circle } from "lucide-react";
 
 interface QuizNavigationProps {
   questions: Question[];
@@ -10,24 +10,21 @@ interface QuizNavigationProps {
   onSelectQuestion: (index: number) => void;
 }
 
-export default function QuizNavigation({ 
-  questions, 
-  currentIndex, 
+export default function QuizNavigation({
+  questions,
+  currentIndex,
   answers,
-  onSelectQuestion 
+  onSelectQuestion,
 }: QuizNavigationProps) {
-  
   const isAnswered = (questionId: string) => {
     return answers[questionId]?.length > 0;
   };
 
-  const answeredCount = questions.filter(q => isAnswered(q._id)).length;
+  const answeredCount = questions.filter((q) => isAnswered(q._id)).length;
 
   return (
     <div className="bg-white rounded-xl border-2 border-gray-200 p-4 sticky top-24">
-      <h3 className="font-semibold text-gray-900 mb-4">
-        Navigation
-      </h3>
+      <h3 className="font-semibold text-gray-900 mb-4">Navigation</h3>
 
       {/* Progress Summary */}
       <div className="mb-4 p-3 bg-blue-50 rounded-lg">
@@ -49,11 +46,12 @@ export default function QuizNavigation({
               onClick={() => onSelectQuestion(index)}
               className={`
                 aspect-square rounded-lg font-semibold text-sm transition-all
-                ${isCurrent 
-                  ? 'bg-blue-600 text-white ring-2 ring-blue-600 ring-offset-2' 
-                  : answered
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ${
+                  isCurrent
+                    ? "bg-blue-600 text-white ring-2 ring-blue-600 ring-offset-2"
+                    : answered
+                      ? "bg-green-100 text-green-700 hover:bg-green-200"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }
               `}
             >

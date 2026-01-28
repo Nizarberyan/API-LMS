@@ -70,7 +70,11 @@ export default function ProfilePage() {
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 overflow-hidden border border-border">
                 {user.profilePicture ? (
                   <img
-                    src={user.profilePicture.startsWith('http') ? user.profilePicture : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${user.profilePicture}`}
+                    src={
+                      user.profilePicture.startsWith("http")
+                        ? user.profilePicture
+                        : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}${user.profilePicture}`
+                    }
                     alt="Profile"
                     className="h-full w-full object-cover"
                   />

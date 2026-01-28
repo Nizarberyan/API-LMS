@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { useEffect } from "react";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
 export default function Error({
   error,
@@ -11,7 +11,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Quiz page error:', error);
+    console.error("Quiz page error:", error);
   }, [error]);
 
   return (
@@ -20,20 +20,18 @@ export default function Error({
         <div className="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mx-auto mb-4">
           <AlertCircle className="w-8 h-8 text-red-600" />
         </div>
-        
+
         <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
           Une erreur est survenue
         </h2>
-        
+
         <p className="text-gray-600 text-center mb-6">
           Impossible de charger les quiz du module. Veuillez réessayer.
         </p>
 
         {error.message && (
           <div className="bg-red-50 border border-red-200 rounded p-3 mb-6">
-            <p className="text-sm text-red-800 font-mono">
-              {error.message}
-            </p>
+            <p className="text-sm text-red-800 font-mono">{error.message}</p>
           </div>
         )}
 

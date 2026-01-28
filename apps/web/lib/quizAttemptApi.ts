@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 export interface QuizAttempt {
   _id: string;
@@ -18,7 +18,7 @@ export interface CreateQuizAttemptDto {
 
 export const quizAttemptApi = {
   createAttempt: async (data: CreateQuizAttemptDto): Promise<QuizAttempt> => {
-    const response = await api.post('/quiz-attempts', data);
+    const response = await api.post("/quiz-attempts", data);
     return response.data;
   },
 
@@ -28,12 +28,14 @@ export const quizAttemptApi = {
   },
 
   finalizeAttempt: async (attemptId: string): Promise<QuizAttempt> => {
-    const response = await api.post(`/quiz-attempts/attempt/${attemptId}/finalize`);
+    const response = await api.post(
+      `/quiz-attempts/attempt/${attemptId}/finalize`,
+    );
     return response.data;
   },
 
   getAttemptsByQuiz: async (quizId: string): Promise<QuizAttempt[]> => {
     const response = await api.get(`/quiz-attempts/quiz/${quizId}/attempts`);
     return response.data;
-  }
+  },
 };

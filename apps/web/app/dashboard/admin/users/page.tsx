@@ -1,55 +1,65 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useMemo } from "react"
-import { User, getColumns } from "./columns"
-import { DataTable } from "./data-table"
-import api from "@/lib/api"
-import { Loader2 } from "lucide-react"
-import { toast } from "sonner"
+import { useEffect, useState, useMemo } from "react";
+import { User, getColumns } from "./columns";
+import { DataTable } from "./data-table";
+import api from "@/lib/api";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function UsersPage() {
-    const [data, setData] = useState<User[]>([])
-    const [isLoading, setIsLoading] = useState(true)
+    const [data, setData] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchData = async () => {
         try {
-            const response = await api.get("/users")
-            setData(response.data)
+            const response = await api.get("/users");
+            setData(response.data);
         } catch (error) {
-            console.error("Failed to fetch users", error)
+            console.error("Failed to fetch users", error);
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
-        fetchData()
-    }, [])
+        fetchData();
+    }, []);
 
     const handleDelete = async (id: string) => {
         try {
-            await api.delete(`/users/${id}`)
+            await api.delete(`/users/${id}`);
             toast.success("User deleted", {
                 description: "The user has been successfully deleted.",
-            })
-            fetchData() // Refresh list
+            });
+            fetchData(); // Refresh list
         } catch (error) {
-            toast.error("Error", {
-                description: "Failed to delete user.",
-            })
+            if (error instanceof Error) {
+                toast.error(`Error: ${error.message}`);
+            } else {
+                toast.error("Error", {
+                    description: "Failed to delete user.",
+                });
+            }
         }
-    }
+    };
 
-    const columns = useMemo(() => getColumns(handleDelete), [])
+    const columns = useMemo(() => getColumns(handleDelete), []);
 
     if (isLoading) {
-        return <div className="flex h-96 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        return (
+            <div className="flex h-96 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
     }
 
     return (
         <div className="container mx-auto py-10">
-            <h1 className="text-3xl font-bold tracking-tight mb-8">User Management</h1>
+            <h1 className="text-3xl font-bold tracking-tight mb-8">
+                User Management
+            </h1>
             <DataTable columns={columns} data={data} />
         </div>
-    )
+    );
 }

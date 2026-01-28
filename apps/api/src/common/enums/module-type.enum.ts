@@ -1,4 +1,4 @@
 export enum ModuleType {
   PDF = 'pdf',
-  VIDEO = 'video'
+  VIDEO = 'video',
 }

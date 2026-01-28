@@ -85,7 +85,9 @@ describe('QuizController', () => {
 
   describe('getQuestionsByQuiz', () => {
     it('devrait retourner les questions', async () => {
-      const result = await controller.getQuestionsByQuiz('65a1b2c3d4e5f6g7h8i9j0k1');
+      const result = await controller.getQuestionsByQuiz(
+        '65a1b2c3d4e5f6g7h8i9j0k1',
+      );
       expect(result).toEqual([mockQuestion]);
     });
   });

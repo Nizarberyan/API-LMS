@@ -35,4 +35,4 @@ import { ModuleProgressModule } from './module-progress/module-progress.module';
   controllers: [AppController, UploadsController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

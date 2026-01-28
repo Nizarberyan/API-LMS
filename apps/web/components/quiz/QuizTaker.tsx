@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import {
   quizApi,
   Quiz,
   Question,
   QuizAttempt,
   CreateQuizAttemptDto,
-  SubmitQuizDto
-} from '@/lib/quiz-api';
-import QuizHeader from './QuizHeader';
-import QuestionCard from './QuestionCard';
-import QuizNavigation from './QuizNavigation';
-import QuizSubmitModal from './QuizSubmitModal';
-import { Loader2, AlertCircle } from 'lucide-react';
-import { jwtDecode } from 'jwt-decode';
+  SubmitQuizDto,
+} from "@/lib/quiz-api";
+import QuizHeader from "./QuizHeader";
+import QuestionCard from "./QuestionCard";
+import QuizNavigation from "./QuizNavigation";
+import QuizSubmitModal from "./QuizSubmitModal";
+import { Loader2, AlertCircle } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 
 interface QuizTakerProps {
   quizId: string;
@@ -23,7 +23,11 @@ interface QuizTakerProps {
   courseId: string;
 }
 
-export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps) {
+export default function QuizTaker({
+  quizId,
+  moduleId,
+  courseId,
+}: QuizTakerProps) {
   const router = useRouter();
   const initialized = useRef(false);
 
@@ -51,9 +55,9 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
       setError(null);
 
       // Check authentication
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
 
@@ -63,11 +67,11 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
         userId = decoded.sub || decoded.id || decoded.userId;
 
         if (!userId) {
-          throw new Error('User ID not found in token');
+          throw new Error("User ID not found in token");
         }
       } catch (e) {
-        console.error('Invalid token:', e);
-        router.push('/auth/login');
+        console.error("Invalid token:", e);
+        router.push("/auth/login");
         return;
       }
 
@@ -88,18 +92,20 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
 
       // 2. Check for existing active attempt
       const userAttempts = await quizApi.getAttemptsByQuiz(quizId);
-      const activeAttempt = userAttempts.find(a => !a.completedAt);
+      const activeAttempt = userAttempts.find((a) => !a.completedAt);
 
       if (activeAttempt) {
-        console.log('Resuming active attempt:', activeAttempt._id);
+        console.log("Resuming active attempt:", activeAttempt._id);
         setAttempt(activeAttempt);
 
         // Load existing answers for this attempt
         try {
-          const existingAnswers = await quizApi.getAnswersByAttempt(activeAttempt._id);
+          const existingAnswers = await quizApi.getAnswersByAttempt(
+            activeAttempt._id,
+          );
           const restoredAnswers = { ...initialAnswers };
 
-          existingAnswers.forEach(ans => {
+          existingAnswers.forEach((ans) => {
             if (ans.questionId) {
               restoredAnswers[ans.questionId] = ans.selectedAnswers || [];
             }
@@ -107,12 +113,11 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
 
           setAnswers(restoredAnswers);
         } catch (err) {
-          console.error('Error loading existing answers:', err);
+          console.error("Error loading existing answers:", err);
           setAnswers(initialAnswers);
         }
-
       } else {
-        console.log('Creating new attempt');
+        console.log("Creating new attempt");
         // Create a new attempt
         const attemptData: CreateQuizAttemptDto = {
           quizId,
@@ -123,16 +128,22 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
         setAttempt(newAttempt);
         setAnswers(initialAnswers);
       }
-
     } catch (err: any) {
-      console.error('Error initializing quiz:', err);
-      setError(err.response?.data?.message || err.message || 'Erreur lors du chargement du quiz');
+      console.error("Error initializing quiz:", err);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Erreur lors du chargement du quiz",
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAnswerChange = (questionId: string, selectedAnswers: number[]) => {
+  const handleAnswerChange = (
+    questionId: string,
+    selectedAnswers: number[],
+  ) => {
     setAnswers((prev) => ({
       ...prev,
       [questionId]: selectedAnswers,
@@ -165,10 +176,12 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
       // Prepare submission data
       const submitData: SubmitQuizDto = {
         attemptId: attempt._id,
-        answers: Object.entries(answers).map(([questionId, selectedAnswers]) => ({
-          questionId,
-          selectedAnswers,
-        })),
+        answers: Object.entries(answers).map(
+          ([questionId, selectedAnswers]) => ({
+            questionId,
+            selectedAnswers,
+          }),
+        ),
       };
 
       // Submit quiz
@@ -179,11 +192,13 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
 
       // Redirect to results page
       router.push(
-        `/dashboard/apprenant/courses/${courseId}/modules/${moduleId}/quizzes/${quizId}/results/${finalizedAttempt._id}`
+        `/dashboard/apprenant/courses/${courseId}/modules/${moduleId}/quizzes/${quizId}/results/${finalizedAttempt._id}`,
       );
     } catch (err: any) {
-      console.error('Error submitting quiz:', err);
-      setError(err.response?.data?.message || 'Erreur lors de la soumission du quiz');
+      console.error("Error submitting quiz:", err);
+      setError(
+        err.response?.data?.message || "Erreur lors de la soumission du quiz",
+      );
       setSubmitting(false);
     }
   };
@@ -228,8 +243,12 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
       <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
         <div className="max-w-md w-full bg-white border border-yellow-200 rounded-xl shadow-lg p-6 text-center">
           <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Quiz non disponible</h2>
-          <p className="text-gray-600 mb-6">Ce quiz ne contient aucune question ou est introuvable.</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Quiz non disponible
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Ce quiz ne contient aucune question ou est introuvable.
+          </p>
           <button
             onClick={() => router.back()}
             className="w-full px-4 py-3 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium"
@@ -282,7 +301,9 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
               question={currentQuestion}
               questionNumber={currentQuestionIndex + 1}
               selectedAnswers={answers[currentQuestion._id] || []}
-              onAnswerChange={(selected) => handleAnswerChange(currentQuestion._id, selected)}
+              onAnswerChange={(selected) =>
+                handleAnswerChange(currentQuestion._id, selected)
+              }
             />
 
             {/* Navigation Buttons */}
@@ -307,7 +328,7 @@ export default function QuizTaker({ quizId, moduleId, courseId }: QuizTakerProps
                       Soumission...
                     </>
                   ) : (
-                    'Soumettre le quiz'
+                    "Soumettre le quiz"
                   )}
                 </button>
               ) : (

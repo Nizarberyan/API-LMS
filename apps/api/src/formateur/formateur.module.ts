@@ -19,7 +19,10 @@ import {
   ModuleProgress,
   ModuleProgressSchema,
 } from 'src/module-progress/entities/module-progress.entity';
-import { Module as ModuleEntity, ModuleSchema } from 'src/modules/entities/module.entity';
+import {
+  Module as ModuleEntity,
+  ModuleSchema,
+} from 'src/modules/entities/module.entity';
 
 @Module({
   imports: [
@@ -38,4 +41,4 @@ import { Module as ModuleEntity, ModuleSchema } from 'src/modules/entities/modul
   controllers: [FormateurController],
   providers: [FormateurService],
 })
-export class FormateurModule { }
+export class FormateurModule {}

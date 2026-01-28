@@ -67,20 +67,21 @@ export default function TeacherDashboardPage() {
 
         // Debugging Logic
         const logs = coursesRes.map((c: any) => {
-          const teacherId = typeof c.teacher === "string" ? c.teacher : c.teacher?._id;
+          const teacherId =
+            typeof c.teacher === "string" ? c.teacher : c.teacher?._id;
           return {
             id: c._id,
             title: c.title,
             teacherVal: c.teacher,
             extractedTeacherId: teacherId,
             currentUserId: profileRes.data._id,
-            isMatch: String(teacherId) === String(profileRes.data._id)
+            isMatch: String(teacherId) === String(profileRes.data._id),
           };
         });
         setDebugLogs(logs);
 
         // Filter to show only this teacher's courses
-        console.log('Fetching data for teacher dashboard...');
+        console.log("Fetching data for teacher dashboard...");
         const myCourses = coursesRes.filter((course) => {
           const teacherId =
             typeof course.teacher === "string"
@@ -166,17 +167,33 @@ export default function TeacherDashboardPage() {
     <div className="space-y-6">
       {/* DEBUG PANEL - REMOVE AFTER FIXING */}
       <Card className="bg-zinc-900 border-zinc-700">
-        <CardHeader><CardTitle className="text-sm text-white">Debug Info (Visible only for debugging)</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle className="text-sm text-white">
+            Debug Info (Visible only for debugging)
+          </CardTitle>
+        </CardHeader>
         <CardContent>
           <div className="text-xs font-mono space-y-1 max-h-60 overflow-y-auto text-zinc-200">
-            <p><strong className="text-white">CurrentUser ID:</strong> {user?._id}</p>
+            <p>
+              <strong className="text-white">CurrentUser ID:</strong>{" "}
+              {user?._id}
+            </p>
             <div className="mt-2 border-t border-zinc-700 pt-2">
-              {debugLogs.length === 0 ? <p className="text-zinc-400">No courses fetched from API</p> : null}
+              {debugLogs.length === 0 ? (
+                <p className="text-zinc-400">No courses fetched from API</p>
+              ) : null}
               {debugLogs.map((log: any) => (
-                <div key={log.id} className={log.isMatch ? "text-green-400 font-bold" : "text-red-400"}>
-                  [{log.isMatch ? 'MATCH' : 'NO MATCH'}] Course: {log.title}
-                  <br />TeacherID: {String(log.extractedTeacherId)}
-                  <br />UserID: {String(log.currentUserId)}
+                <div
+                  key={log.id}
+                  className={
+                    log.isMatch ? "text-green-400 font-bold" : "text-red-400"
+                  }
+                >
+                  [{log.isMatch ? "MATCH" : "NO MATCH"}] Course: {log.title}
+                  <br />
+                  TeacherID: {String(log.extractedTeacherId)}
+                  <br />
+                  UserID: {String(log.currentUserId)}
                 </div>
               ))}
             </div>

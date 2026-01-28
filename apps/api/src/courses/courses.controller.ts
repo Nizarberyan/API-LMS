@@ -24,7 +24,7 @@ import { type ObjectId } from '@src/common/types/objectid.type';
 @Controller('courses')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) { }
+  constructor(private readonly coursesService: CoursesService) {}
 
   @Post()
   @Roles(Role.TEACHER)
@@ -59,7 +59,7 @@ export class CoursesController {
   }
 
   @Delete(':id')
-  @Roles(Role.TEACHER,Role.ADMIN)
+  @Roles(Role.TEACHER, Role.ADMIN)
   remove(
     @Param('id', ParseObjectIdPipe) id: ObjectId,
     @CurrentUser() user: User,
@@ -101,7 +101,8 @@ export class CoursesController {
       courseId,
       apprenantId,
       progressPercentage: progress,
-    };}
+    };
+  }
 
   @Get(':courseId/modules')
   @Roles(Role.TEACHER, Role.STUDENT)

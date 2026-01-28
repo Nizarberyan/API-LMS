@@ -1,10 +1,9 @@
-import { redirect } from 'next/navigation';
-import QuizList from '@/components/quiz/QuizList';
-import { FileText, BookOpen } from 'lucide-react';
+import QuizList from "@/components/quiz/QuizList";
+import { FileText, BookOpen } from "lucide-react";
 
 interface PageProps {
   params: Promise<{
-    id: string;        // ← Votre route utilise [id], pas [courseId]
+    id: string; // ← Votre route utilise [id], pas [courseId]
     moduleId: string;
   }>;
 }
@@ -36,8 +35,9 @@ export default async function QuizzesPage({ params }: PageProps) {
               <BookOpen className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm text-blue-900">
-                  <strong>Conseil:</strong> Les quiz obligatoires doivent être complétés
-                  avec un score minimum pour débloquer la suite du module.
+                  <strong>Conseil:</strong> Les quiz obligatoires doivent être
+                  complétés avec un score minimum pour débloquer la suite du
+                  module.
                 </p>
               </div>
             </div>
@@ -45,10 +45,7 @@ export default async function QuizzesPage({ params }: PageProps) {
         </header>
 
         {/* Quiz List */}
-        <QuizList
-          moduleId={moduleId}
-          courseId={courseId}
-        />
+        <QuizList moduleId={moduleId} courseId={courseId} />
       </div>
     </div>
   );

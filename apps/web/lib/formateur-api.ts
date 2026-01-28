@@ -1,5 +1,5 @@
 // lib/services/formateur-api.service.ts
-import api from './api';
+import api from "./api";
 
 // ==================== TYPES ====================
 
@@ -62,10 +62,10 @@ export interface StudentProgressReport {
 
 export class FormateurApiService {
   // Plus besoin de token en paramètre, l'interceptor s'en charge !
-  
+
   async getMyCourses(): Promise<Course[]> {
-    const response = await api.get('/formateur/my-courses');
-    console.log("response de for",response.data.data);
+    const response = await api.get("/formateur/my-courses");
+    console.log("response de for", response.data.data);
     return response.data.data;
   }
 
@@ -76,22 +76,22 @@ export class FormateurApiService {
 
   async getStudentProgress(
     courseId: string,
-    studentId: string
+    studentId: string,
   ): Promise<StudentProgressReport> {
     console.log("hello meriem el mecaniqui");
-    console.log("courseId",courseId);
-    console.log("studentId",studentId);
+    console.log("courseId", courseId);
+    console.log("studentId", studentId);
     const response = await api.get(
-      `/formateur/courses/${courseId}/students/${studentId}/progress`
+      `/formateur/courses/${courseId}/students/${studentId}/progress`,
     );
     return response.data.data;
   }
 
   async getCourseProgress(courseId: string): Promise<StudentProgressReport[]> {
     console.log("hello meriem ");
-    console.log("courseId",courseId);
+    console.log("courseId", courseId);
     const response = await api.get(`/formateur/courses/${courseId}/progress`);
-    console.log("response",response.data.data);
+    console.log("response", response.data.data);
     return response.data.data;
   }
 }

@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 export interface Answer {
   _id: string;
@@ -22,7 +22,7 @@ export interface SubmitQuizDto {
 
 export const answerApi = {
   createAnswer: async (data: CreateAnswerDto): Promise<Answer> => {
-    const response = await api.post('/answers', data);
+    const response = await api.post("/answers", data);
     return response.data;
   },
 
@@ -32,7 +32,7 @@ export const answerApi = {
   },
 
   submitQuiz: async (data: SubmitQuizDto): Promise<any> => {
-    const response = await api.post('/answers/submit-quiz', data);
+    const response = await api.post("/answers/submit-quiz", data);
     return response.data;
-  }
+  },
 };

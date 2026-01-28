@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Users, Shield, GraduationCap, LayoutDashboard } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Users,
+  Shield,
+  GraduationCap,
+  LayoutDashboard,
+} from "lucide-react";
 
 export default function Page() {
   return (
@@ -11,7 +18,10 @@ export default function Page() {
           <span className="font-bold text-lg tracking-tight">LMS Platform</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-sm font-medium hover:text-primary transition-colors flex items-center" href="/auth/login">
+          <Link
+            className="text-sm font-medium hover:text-primary transition-colors flex items-center"
+            href="/auth/login"
+          >
             Log In
           </Link>
           <Link
@@ -36,7 +46,8 @@ export default function Page() {
                   Empowering Education <br /> for Everyone
                 </h1>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  A modern Learning Management System designed for Seamless Teaching and Effective Learning. Unlock your potential today.
+                  A modern Learning Management System designed for Seamless
+                  Teaching and Effective Learning. Unlock your potential today.
                 </p>
               </div>
               <div className="space-x-4 pt-4">
@@ -61,7 +72,9 @@ export default function Page() {
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Why Choose Us?</h2>
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                Why Choose Us?
+              </h2>
               <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mt-4">
                 Built with the needs of modern education in mind.
               </p>
@@ -74,7 +87,8 @@ export default function Page() {
                 </div>
                 <h3 className="text-xl font-bold">Comprehensive Courses</h3>
                 <p className="text-muted-foreground text-center">
-                  Access a wide range of structured courses designed by experts in their fields.
+                  Access a wide range of structured courses designed by experts
+                  in their fields.
                 </p>
               </div>
 
@@ -85,7 +99,8 @@ export default function Page() {
                 </div>
                 <h3 className="text-xl font-bold">Role-Based Access</h3>
                 <p className="text-muted-foreground text-center">
-                  Dedicated portals for Students, Teachers, and Admins to ensure a tailored experience.
+                  Dedicated portals for Students, Teachers, and Admins to ensure
+                  a tailored experience.
                 </p>
               </div>
 
@@ -96,7 +111,8 @@ export default function Page() {
                 </div>
                 <h3 className="text-xl font-bold">Intuitive Dashboard</h3>
                 <p className="text-muted-foreground text-center">
-                  Track progress, manage assignments, and view grades from a single, clean interface.
+                  Track progress, manage assignments, and view grades from a
+                  single, clean interface.
                 </p>
               </div>
             </div>
@@ -119,4 +135,3 @@ export default function Page() {
     </div>
   );
 }
-

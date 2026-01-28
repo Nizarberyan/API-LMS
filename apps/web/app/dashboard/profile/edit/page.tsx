@@ -50,7 +50,9 @@ const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, "Current password is required"),
     newPassword: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
@@ -221,10 +223,17 @@ export default function EditProfilePage() {
           <CardContent className="space-y-6">
             {/* Avatar Section */}
             <div className="flex flex-col items-center gap-4 py-4">
-              <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              <div
+                className="relative group cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <div className="h-24 w-24 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center border-2 border-border">
                   {avatarPreview ? (
-                    <img src={avatarPreview} alt="Profile" className="h-full w-full object-cover" />
+                    <img
+                      src={avatarPreview}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <User className="h-12 w-12 text-primary" />
                   )}
@@ -245,14 +254,21 @@ export default function EditProfilePage() {
                 accept="image/*"
                 onChange={handleFileChange}
               />
-              <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <Upload className="mr-2 h-4 w-4" />
                 Change Picture
               </Button>
             </div>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 {error && (
                   <div className="p-3 text-sm font-medium text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
                     {error}
@@ -324,11 +340,16 @@ export default function EditProfilePage() {
               <Lock className="h-5 w-5 text-muted-foreground" />
               <CardTitle>Change Password</CardTitle>
             </div>
-            <CardDescription>Secure your account with a new password</CardDescription>
+            <CardDescription>
+              Secure your account with a new password
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...passwordForm}>
-              <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
+              <form
+                onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={passwordForm.control}
                   name="currentPassword"
@@ -350,7 +371,11 @@ export default function EditProfilePage() {
                       <FormItem>
                         <FormLabel>New Password</FormLabel>
                         <FormControl>
-                          <Input type="password" {...field} disabled={isSaving} />
+                          <Input
+                            type="password"
+                            {...field}
+                            disabled={isSaving}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -363,7 +388,11 @@ export default function EditProfilePage() {
                       <FormItem>
                         <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
-                          <Input type="password" {...field} disabled={isSaving} />
+                          <Input
+                            type="password"
+                            {...field}
+                            disabled={isSaving}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
