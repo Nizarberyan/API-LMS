@@ -28,8 +28,4 @@ function Switch({
   );
 }
 
-<<<<<<< HEAD
 export { Switch }
-=======
-export { Switch };
->>>>>>> bc978cf (refactor: Rename instructor to teacher, consolidate course pages, and update API models and UI components.)

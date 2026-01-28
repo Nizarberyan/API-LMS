@@ -154,8 +154,4 @@ export {
   AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
-<<<<<<< HEAD
 }
-=======
-};
->>>>>>> bc978cf (refactor: Rename instructor to teacher, consolidate course pages, and update API models and UI components.)

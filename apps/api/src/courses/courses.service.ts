@@ -52,7 +52,7 @@ export class CoursesService {
   async findOne(id: ObjectId): Promise<Course | null> {
     // Exclude soft-deleted courses
     return this.courseModel
-      .findOne({ _id: id, deletedAt: { $exists: false } })
+      .findOne({ _id: id, $or:[{deletedAt: { $exists: false } }, { deletedAt: null }] })
       .populate('teacher', 'firstName lastName email role')
       .exec();
   }
@@ -91,7 +91,7 @@ export class CoursesService {
 
   async findPublished(): Promise<Course[]> {
     return this.courseModel
-      .find({ isPublished: true, deletedAt: { $exists: false } })
+      .find({ isPublished: true, $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] })
       .populate('teacher', 'firstName lastName email role')
       .exec();
   }
@@ -221,7 +221,7 @@ export class CoursesService {
   }
   async getModulesByCourse(courseId: Types.ObjectId): Promise<Module[]> {
     return this.moduleModel
-      .find({ course: courseId, deletedAt: { $exists: false } })
+      .find({ course: courseId, $or:[{deletedAt: { $exists: false }},{deletedAt: null } ] })
       .sort({ order: 1 })
       .exec();
   }

@@ -21,6 +21,7 @@ export default function CourseDetailPage() {
 
   useEffect(() => {
     const fetchCourse = async () => {
+        console.log("Invalid course ID:", params.id)
       if (!params.id || typeof params.id !== "string") {
         setError("Invalid course ID")
         setIsLoading(false)
@@ -29,6 +30,7 @@ export default function CourseDetailPage() {
 
       try {
         const data = await getCourse(params.id)
+        console.log("Fetched course data:", data)
         setCourse(data)
       } catch (err) {
         console.error("Failed to fetch course:", err)

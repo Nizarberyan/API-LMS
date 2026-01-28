@@ -36,7 +36,9 @@ export async function getPublishedCourses(): Promise<Course[]> {
 }
 
 export async function getCourse(id: string): Promise<Course> {
+  // console.log("id", id);
   const response = await api.get<Course>(`/courses/${id}`);
+  console.log("response", response);
   return response.data;
 }
 

@@ -30,7 +30,7 @@ export default function QuizzesPage() {
         const checkRoleAndFetch = async () => {
             try {
                 const profile = await api.get("/auth/profile");
-                if (profile.data.role !== "admin") {
+                if (profile.data.role !== "teacher") {
                     router.replace("/dashboard");
                     return;
                 }
