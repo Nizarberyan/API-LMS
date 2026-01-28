@@ -1,8 +1,8 @@
-'use client';
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation'; // ou 'next/router' selon ta version
+"use client";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation"; // ou 'next/router' selon ta version
 
-import api from '@/lib/api';
+import api from "@/lib/api";
 
 export default function ResumeModule() {
   const params = useParams();
@@ -15,7 +15,7 @@ export default function ResumeModule() {
   useEffect(() => {
     const fetchUserAndModule = async () => {
       try {
-        const userRes = await api.get('/auth/profile');
+        const userRes = await api.get("/auth/profile");
         const userId = userRes.data?._id;
         setApprenantId(userId);
         if (!courseId || !userId) return;
@@ -23,7 +23,7 @@ export default function ResumeModule() {
         const modulesRes = await api.get(`/courses/${courseId}/modules`);
         setModule(modulesRes.data);
       } catch (err) {
-        setError('Erreur lors du chargement du module à reprendre.');
+        setError("Erreur lors du chargement du module à reprendre.");
       } finally {
         setLoading(false);
       }

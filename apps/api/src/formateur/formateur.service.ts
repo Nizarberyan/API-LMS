@@ -23,10 +23,13 @@ export class FormateurService {
     @InjectModel(Enrollment.name)
     private readonly enrollmentModel: Model<Enrollment>,
     @InjectModel(Course.name) private readonly courseModel: Model<Course>,
-    @InjectModel(QuizAttempt.name) private readonly quizAttemptModel: Model<QuizAttempt>,
-    @InjectModel(ModuleProgress.name) private readonly moduleProgressModel: Model<ModuleProgress>,
-    @InjectModel(ModuleEntity.name) private readonly moduleModel: Model<ModuleEntity>,
-  ) { }
+    @InjectModel(QuizAttempt.name)
+    private readonly quizAttemptModel: Model<QuizAttempt>,
+    @InjectModel(ModuleProgress.name)
+    private readonly moduleProgressModel: Model<ModuleProgress>,
+    @InjectModel(ModuleEntity.name)
+    private readonly moduleModel: Model<ModuleEntity>,
+  ) {}
 
   // ==========================================
   //            MÉTHODES PUBLIQUES
@@ -104,21 +107,24 @@ export class FormateurService {
       .select('_id title') // Select title too for later use if needed
       .lean();
 
-    const moduleIds = courseModules.map(m => m._id);
+    const moduleIds = courseModules.map((m) => m._id);
 
     // Récupération de données en parallèle (Performance)
     const [moduleProgressData, quizAttempts] = await Promise.all([
       this.moduleProgressModel
         .find({
           apprenantId: studentId,
-          moduleId: { $in: moduleIds }
+          moduleId: { $in: moduleIds },
         })
         .populate('moduleId', 'title')
         .lean(),
       this.fetchQuizAttemptsForCourse(studentId, courseId),
     ]);
 
-    const moduleProgress = this.mapModuleProgress(moduleProgressData, courseModules);
+    const moduleProgress = this.mapModuleProgress(
+      moduleProgressData,
+      courseModules,
+    );
     const quizResults = this.mapQuizResults(quizAttempts);
 
     const student = enrollment.student as any;
@@ -177,7 +183,7 @@ export class FormateurService {
     if (!course) throw new NotFoundException('Cours introuvable');
     if (course.teacher.toString() !== teacherId) {
       throw new ForbiddenException(
-        'Accès refusé : vous n\'êtes pas le propriétaire de ce cours',
+        "Accès refusé : vous n'êtes pas le propriétaire de ce cours",
       );
     }
   }
@@ -200,12 +206,18 @@ export class FormateurService {
     );
   }
 
-  private mapModuleProgress(data: any[], allModules: any[]): ModuleProgressDto[] {
+  private mapModuleProgress(
+    data: any[],
+    allModules: any[],
+  ): ModuleProgressDto[] {
     // Map existing progress
     const progressMap = new Map();
-    data.forEach(mp => {
+    data.forEach((mp) => {
       if (mp.moduleId) {
-        progressMap.set(mp.moduleId._id ? mp.moduleId._id.toString() : mp.moduleId.toString(), mp);
+        progressMap.set(
+          mp.moduleId._id ? mp.moduleId._id.toString() : mp.moduleId.toString(),
+          mp,
+        );
       }
     });
 

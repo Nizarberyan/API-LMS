@@ -42,7 +42,7 @@ export default function QuizList({ moduleId, courseId }: QuizListProps) {
       setQuizzes(data);
     } catch (err: any) {
       setError(
-        err.response?.data?.message || "Erreur lors du chargement des quiz"
+        err.response?.data?.message || "Erreur lors du chargement des quiz",
       );
     } finally {
       setLoading(false);
@@ -51,7 +51,7 @@ export default function QuizList({ moduleId, courseId }: QuizListProps) {
 
   const handleStartQuiz = (quizId: string) => {
     router.push(
-      `/dashboard/apprenant/courses/${courseId}/modules/${moduleId}/quizzes/${quizId}`
+      `/dashboard/apprenant/courses/${courseId}/modules/${moduleId}/quizzes/${quizId}`,
     );
   };
 
@@ -107,13 +107,13 @@ export default function QuizList({ moduleId, courseId }: QuizListProps) {
   }
 
   /* -------------------- Data -------------------- */
-/* -------------------- Data -------------------- */
-return (
-  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-    {quizzes.map((quiz) => (
-      <Card
-        key={quiz._id}
-        className="
+  /* -------------------- Data -------------------- */
+  return (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {quizzes.map((quiz) => (
+        <Card
+          key={quiz._id}
+          className="
           bg-zinc-900 
           border border-zinc-800 
           text-white 
@@ -121,36 +121,36 @@ return (
           hover:shadow-xl 
           hover:border-zinc-700
         "
-      >
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between gap-2 text-white">
-            <span>{quiz.title}</span>
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between gap-2 text-white">
+              <span>{quiz.title}</span>
 
-            {/* Badge */}
-            {quiz.isRequired ? (
-              <span className="text-xs px-3 py-1 rounded-full bg-rose-600/20 text-rose-400 border border-rose-500/30">
-                Obligatoire
+              {/* Badge */}
+              {quiz.isRequired ? (
+                <span className="text-xs px-3 py-1 rounded-full bg-rose-600/20 text-rose-400 border border-rose-500/30">
+                  Obligatoire
+                </span>
+              ) : (
+                <span className="text-xs px-3 py-1 rounded-full bg-zinc-700 text-zinc-300 border border-zinc-600">
+                  Facultatif
+                </span>
+              )}
+            </CardTitle>
+
+            <CardDescription className="flex items-center gap-2 mt-2 text-zinc-400">
+              <Award className="w-4 h-4 text-yellow-500" />
+              Score minimum :
+              <span className="font-semibold text-white">
+                {quiz.passingScore}%
               </span>
-            ) : (
-              <span className="text-xs px-3 py-1 rounded-full bg-zinc-700 text-zinc-300 border border-zinc-600">
-                Facultatif
-              </span>
-            )}
-          </CardTitle>
+            </CardDescription>
+          </CardHeader>
 
-          <CardDescription className="flex items-center gap-2 mt-2 text-zinc-400">
-            <Award className="w-4 h-4 text-yellow-500" />
-            Score minimum :
-            <span className="font-semibold text-white">
-              {quiz.passingScore}%
-            </span>
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          <Button
-            onClick={() => handleStartQuiz(quiz._id)}
-            className="
+          <CardContent>
+            <Button
+              onClick={() => handleStartQuiz(quiz._id)}
+              className="
               w-full 
               flex 
               items-center 
@@ -159,15 +159,13 @@ return (
               text-black 
               hover:bg-zinc-200
             "
-          >
-            <PlayCircle className="w-4 h-4" />
-            Commencer le quiz
-          </Button>
-        </CardContent>
-      </Card>
-    ))}
-  </div>
-);
-
-
+            >
+              <PlayCircle className="w-4 h-4" />
+              Commencer le quiz
+            </Button>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
 }

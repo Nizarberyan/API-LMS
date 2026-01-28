@@ -1,9 +1,9 @@
-import { redirect } from 'next/navigation';
-import QuizResults from '@/components/quiz/QuizResults';
+import { redirect } from "next/navigation";
+import QuizResults from "@/components/quiz/QuizResults";
 
 interface PageProps {
   params: Promise<{
-    id: string;           // ← Votre route utilise [id], pas [courseId]
+    id: string; // ← Votre route utilise [id], pas [courseId]
     moduleId: string;
     quizId: string;
     attemptId: string;
@@ -19,7 +19,7 @@ export default async function ResultsPage({ params }: PageProps) {
       quizId={quizId}
       attemptId={attemptId}
       moduleId={moduleId}
-      courseId={courseId}  // Maintenant courseId est défini
+      courseId={courseId} // Maintenant courseId est défini
     />
   );
 }

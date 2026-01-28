@@ -1,12 +1,14 @@
-import api from './api';
+import api from "./api";
 
 // ========== TYPES ==========
 export interface Quiz {
   _id: string;
-  moduleId: string | {
-    _id: string;
-    title: string;
-  };
+  moduleId:
+    | string
+    | {
+        _id: string;
+        title: string;
+      };
   title: string;
   passingScore: number;
   isRequired: boolean;
@@ -16,9 +18,9 @@ export interface Quiz {
 }
 
 export enum QuestionType {
-  MULTIPLE_CHOICE = 'multiple_choice',
-  SINGLE_CHOICE = 'single_choice',
-  TRUE_FALSE = 'true_false',
+  MULTIPLE_CHOICE = "multiple_choice",
+  SINGLE_CHOICE = "single_choice",
+  TRUE_FALSE = "true_false",
 }
 
 export interface Question {
@@ -102,8 +104,10 @@ export const quizApi = {
   },
 
   // QuizAttempt endpoints
-  createQuizAttempt: async (data: CreateQuizAttemptDto): Promise<QuizAttempt> => {
-    const response = await api.post('/quiz-attempts', data);
+  createQuizAttempt: async (
+    data: CreateQuizAttemptDto,
+  ): Promise<QuizAttempt> => {
+    const response = await api.post("/quiz-attempts", data);
     return response.data;
   },
 
@@ -118,13 +122,15 @@ export const quizApi = {
   },
 
   finalizeAttempt: async (attemptId: string): Promise<QuizAttempt> => {
-    const response = await api.post(`/quiz-attempts/attempt/${attemptId}/finalize`);
+    const response = await api.post(
+      `/quiz-attempts/attempt/${attemptId}/finalize`,
+    );
     return response.data;
   },
 
   // Answer endpoints
   createAnswer: async (data: CreateAnswerDto): Promise<Answer> => {
-    const response = await api.post('/answers', data);
+    const response = await api.post("/answers", data);
     return response.data;
   },
 
@@ -134,7 +140,7 @@ export const quizApi = {
   },
 
   submitQuiz: async (data: SubmitQuizDto): Promise<QuizSubmissionResult> => {
-    const response = await api.post('/answers/submit-quiz', data);
+    const response = await api.post("/answers/submit-quiz", data);
     return response.data;
   },
 };

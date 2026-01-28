@@ -20,8 +20,6 @@ export class CreateCourseDto {
   @MaxLength(2000, { message: 'Description must be at most 2000 characters' })
   description?: string;
 
-
-
   @IsBoolean()
   @IsOptional()
   isPublished?: boolean;

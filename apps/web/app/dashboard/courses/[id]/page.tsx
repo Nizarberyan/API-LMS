@@ -1,48 +1,52 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { Course, getCourse } from "@/lib/courses"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Loader2, ArrowLeft, User, Calendar, BookOpen } from "lucide-react"
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Course, getCourse } from "@/lib/courses";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Loader2, ArrowLeft, User, Calendar, BookOpen } from "lucide-react";
 import api from "@/lib/api";
-import Link from "next/link"
+import Link from "next/link";
 
 export default function CourseDetailPage() {
-  const params = useParams()
-  const router = useRouter()
-  const [course, setCourse] = useState<Course | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const params = useParams();
+  const router = useRouter();
+  const [course, setCourse] = useState<Course | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
-
 
   useEffect(() => {
     const fetchCourse = async () => {
-        console.log("Invalid course ID:", params.id)
+      console.log("Invalid course ID:", params.id);
       if (!params.id || typeof params.id !== "string") {
-        setError("Invalid course ID")
-        setIsLoading(false)
-        return
+        setError("Invalid course ID");
+        setIsLoading(false);
+        return;
       }
 
       try {
-        const data = await getCourse(params.id)
-        console.log("Fetched course data:", data)
-        setCourse(data)
+        const data = await getCourse(params.id);
+        console.log("Fetched course data:", data);
+        setCourse(data);
       } catch (err) {
-        console.error("Failed to fetch course:", err)
-        setError("Course not found")
+        console.error("Failed to fetch course:", err);
+        setError("Course not found");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchCourse()
-
-  }, [params.id])
+    fetchCourse();
+  }, [params.id]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -63,7 +67,7 @@ export default function CourseDetailPage() {
       <div className="flex h-[50vh] w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
 
   if (error || !course) {
@@ -79,7 +83,7 @@ export default function CourseDetailPage() {
           {error || "Course not found"}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -111,9 +115,13 @@ export default function CourseDetailPage() {
               </div>
             </div>
             {course.isPublished ? (
-              <Badge variant="default" className="shrink-0">Published</Badge>
+              <Badge variant="default" className="shrink-0">
+                Published
+              </Badge>
             ) : (
-              <Badge variant="secondary" className="shrink-0">Draft</Badge>
+              <Badge variant="secondary" className="shrink-0">
+                Draft
+              </Badge>
             )}
           </div>
         </CardHeader>
@@ -128,20 +136,26 @@ export default function CourseDetailPage() {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              <span>Created: {new Date(course.createdAt).toLocaleDateString()}</span>
+              <span>
+                Created: {new Date(course.createdAt).toLocaleDateString()}
+              </span>
             </div>
           </div>
           <div className="pt-4 border-t">
             {userRole === "student" && (
               <Button size="lg" asChild>
-                <Link href={`/dashboard/apprenant/courses/${params.id}/modules`}>
+                <Link
+                  href={`/dashboard/apprenant/courses/${params.id}/modules`}
+                >
                   Start Learning
                 </Link>
               </Button>
             )}
             {userRole === "teacher" && (
               <Button size="lg" asChild>
-                <Link href={`/dashboard/formateur/courses/${params.id}/modules`}>
+                <Link
+                  href={`/dashboard/formateur/courses/${params.id}/modules`}
+                >
                   Gérer les modules
                 </Link>
               </Button>
@@ -150,5 +164,5 @@ export default function CourseDetailPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

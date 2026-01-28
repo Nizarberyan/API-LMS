@@ -31,7 +31,10 @@ export class ModulesController {
   @Post()
   @UseInterceptors(FileInterceptor('content'))
   @Roles(Role.TEACHER)
-  create(@UploadedFile() file: Express.Multer.File, @Body() createModuleDto: CreateModuleDto) {
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createModuleDto: CreateModuleDto,
+  ) {
     return this.modulesService.create(createModuleDto, file);
   }
 
@@ -52,7 +55,10 @@ export class ModulesController {
   }
 
   @Get(':id/file')
-  async getFile(@Param('id', ParseObjectIdPipe) id: ObjectId, @Res() res: Response) {
+  async getFile(
+    @Param('id', ParseObjectIdPipe) id: ObjectId,
+    @Res() res: Response,
+  ) {
     return this.modulesService.getFile(id, res);
   }
 

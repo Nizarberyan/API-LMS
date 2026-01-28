@@ -5,7 +5,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-})
+});
 
 // Types
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {

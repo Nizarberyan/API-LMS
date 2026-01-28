@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Quiz, QuizAttempt } from '@/lib/quiz-api';
-import { Clock, Target, Hash } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Quiz, QuizAttempt } from "@/lib/quiz-api";
+import { Clock, Target, Hash } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface QuizHeaderProps {
   quiz: Quiz;
@@ -12,26 +12,28 @@ interface QuizHeaderProps {
   answeredCount: number;
 }
 
-export default function QuizHeader({ 
-  quiz, 
-  attempt, 
-  currentQuestionIndex, 
+export default function QuizHeader({
+  quiz,
+  attempt,
+  currentQuestionIndex,
   totalQuestions,
-  answeredCount 
+  answeredCount,
 }: QuizHeaderProps) {
-  const [elapsedTime, setElapsedTime] = useState('00:00');
+  const [elapsedTime, setElapsedTime] = useState("00:00");
 
   useEffect(() => {
     const startTime = new Date(attempt.startedAt).getTime();
-    
+
     const interval = setInterval(() => {
       const now = Date.now();
       const diff = now - startTime;
-      
+
       const minutes = Math.floor(diff / 60000);
       const seconds = Math.floor((diff % 60000) / 1000);
-      
-      setElapsedTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+
+      setElapsedTime(
+        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`,
+      );
     }, 1000);
 
     return () => clearInterval(interval);
@@ -49,11 +51,15 @@ export default function QuizHeader({
             <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
               <div className="flex items-center gap-1">
                 <Target className="w-4 h-4" />
-                <span>Score minimum: <strong>{quiz.passingScore}%</strong></span>
+                <span>
+                  Score minimum: <strong>{quiz.passingScore}%</strong>
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <Hash className="w-4 h-4" />
-                <span>Tentative: <strong>#{attempt.attemptNumber}</strong></span>
+                <span>
+                  Tentative: <strong>#{attempt.attemptNumber}</strong>
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
@@ -75,7 +81,7 @@ export default function QuizHeader({
 
         {/* Progress Bar */}
         <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div 
+          <div
             className="absolute h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300"
             style={{ width: `${progress}%` }}
           />

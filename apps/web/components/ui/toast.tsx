@@ -1,4 +1,4 @@
-import { toast, ToastOptions } from 'react-toastify';
+import { toast, ToastOptions } from "react-toastify";
 
 // Custom toast functions with default styles
 export const showSuccess = (message: string, options?: ToastOptions) => {

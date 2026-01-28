@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { StudentProgressReport, formateurApi } from '@/lib/formateur-api';
-import { 
-  ArrowLeft, 
-  Users, 
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { StudentProgressReport, formateurApi } from "@/lib/formateur-api";
+import {
+  ArrowLeft,
+  Users,
   UserCheck,
   TrendingUp,
   Calendar,
   ArrowRight,
   Loader2,
   AlertCircle,
-  BookOpen
-} from 'lucide-react';
+  BookOpen,
+} from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import ProgressBar from '@/components/formateur/ProgressBar';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import ProgressBar from "@/components/formateur/ProgressBar";
 
 export default function CourseStudentsPage() {
   const router = useRouter();
@@ -28,7 +28,8 @@ export default function CourseStudentsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const fetchProgress = async () => {
     if (!token || !courseId) return;
@@ -40,7 +41,7 @@ export default function CourseStudentsPage() {
       const data = await formateurApi.getCourseProgress(courseId);
       setReports(data);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erreur lors du chargement');
+      setError(err.response?.data?.message || "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }
@@ -65,11 +66,7 @@ export default function CourseStudentsPage() {
     <div className="min-h-screen bg-muted/40">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={() => router.back()}
-          className="mb-6"
-        >
+        <Button variant="ghost" onClick={() => router.back()} className="mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Retour aux cours
         </Button>
@@ -83,14 +80,19 @@ export default function CourseStudentsPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold tracking-tight">
-                  {reports[0]?.courseTitle || 'Cours'}
+                  {reports[0]?.courseTitle || "Cours"}
                 </h1>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Users className="w-5 h-5 text-primary" />
-              <span className="font-semibold text-foreground">{reports.length}</span>
-              <span>étudiant{reports.length > 1 ? 's' : ''} inscrit{reports.length > 1 ? 's' : ''}</span>
+              <span className="font-semibold text-foreground">
+                {reports.length}
+              </span>
+              <span>
+                étudiant{reports.length > 1 ? "s" : ""} inscrit
+                {reports.length > 1 ? "s" : ""}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -163,8 +165,8 @@ export default function CourseStudentsPage() {
                   </thead>
                   <tbody className="divide-y">
                     {reports.map((report) => (
-                      <tr 
-                        key={report.studentId} 
+                      <tr
+                        key={report.studentId}
                         className="hover:bg-muted/50 transition-colors group"
                       >
                         <td className="px-6 py-4">
@@ -200,8 +202,10 @@ export default function CourseStudentsPage() {
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Calendar className="w-4 h-4" />
                             {report.lastActivityAt
-                              ? new Date(report.lastActivityAt).toLocaleDateString('fr-FR')
-                              : 'Aucune'}
+                              ? new Date(
+                                  report.lastActivityAt,
+                                ).toLocaleDateString("fr-FR")
+                              : "Aucune"}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -210,7 +214,7 @@ export default function CourseStudentsPage() {
                             size="sm"
                             onClick={() =>
                               router.push(
-                                `/dashboard/formateur/students/${courseId}/${report.studentId}`
+                                `/dashboard/formateur/students/${courseId}/${report.studentId}`,
                               )
                             }
                             className="group-hover:bg-primary/10 group-hover:text-primary"

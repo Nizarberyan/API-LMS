@@ -29,7 +29,7 @@ export class CoursesService {
 
     @InjectModel(Enrollment.name)
     private readonly enrollmentModel: Model<Enrollment>,
-  ) { }
+  ) {}
 
   async create(createCourseDto: CreateCourseDto, user: User): Promise<Course> {
     const course = new this.courseModel({
@@ -221,7 +221,10 @@ export class CoursesService {
   }
   async getModulesByCourse(courseId: Types.ObjectId): Promise<Module[]> {
     return this.moduleModel
-      .find({ course: courseId, $or:[{deletedAt: { $exists: false }},{deletedAt: null } ] })
+      .find({
+        course: courseId,
+        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+      })
       .sort({ order: 1 })
       .exec();
   }

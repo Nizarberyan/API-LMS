@@ -27,7 +27,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
     private tokenBlacklistService: TokenBlacklistService,
-  ) { }
+  ) {}
 
   async getTokens(userId: string, email: string, role: Role) {
     const [accessToken, refreshToken] = await Promise.all([

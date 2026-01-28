@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface QuizSubmitModalProps {
   totalQuestions: number;
@@ -9,11 +9,11 @@ interface QuizSubmitModalProps {
   onCancel: () => void;
 }
 
-export default function QuizSubmitModal({ 
-  totalQuestions, 
-  answeredCount, 
-  onConfirm, 
-  onCancel 
+export default function QuizSubmitModal({
+  totalQuestions,
+  answeredCount,
+  onConfirm,
+  onCancel,
 }: QuizSubmitModalProps) {
   const unansweredCount = totalQuestions - answeredCount;
   const allAnswered = unansweredCount === 0;
@@ -28,9 +28,7 @@ export default function QuizSubmitModal({
           ) : (
             <AlertCircle className="w-8 h-8 text-orange-600" />
           )}
-          <h2 className="text-xl font-bold text-gray-900">
-            Soumettre le quiz
-          </h2>
+          <h2 className="text-xl font-bold text-gray-900">Soumettre le quiz</h2>
         </div>
 
         {/* Content */}
@@ -38,7 +36,9 @@ export default function QuizSubmitModal({
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-gray-600">Questions répondues</span>
-              <span className="font-bold text-gray-900">{answeredCount}/{totalQuestions}</span>
+              <span className="font-bold text-gray-900">
+                {answeredCount}/{totalQuestions}
+              </span>
             </div>
             {!allAnswered && (
               <div className="flex justify-between items-center text-orange-600">
@@ -50,13 +50,16 @@ export default function QuizSubmitModal({
 
           {allAnswered ? (
             <p className="text-gray-700">
-              Toutes les questions ont été répondues. Êtes-vous prêt à soumettre votre quiz ?
+              Toutes les questions ont été répondues. Êtes-vous prêt à soumettre
+              votre quiz ?
             </p>
           ) : (
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
               <p className="text-orange-900 text-sm">
-                <strong>Attention :</strong> Vous avez {unansweredCount} question{unansweredCount > 1 ? 's' : ''} non répondue{unansweredCount > 1 ? 's' : ''}. 
-                Les questions sans réponse seront comptées comme incorrectes.
+                <strong>Attention :</strong> Vous avez {unansweredCount}{" "}
+                question{unansweredCount > 1 ? "s" : ""} non répondue
+                {unansweredCount > 1 ? "s" : ""}. Les questions sans réponse
+                seront comptées comme incorrectes.
               </p>
             </div>
           )}
@@ -78,9 +81,10 @@ export default function QuizSubmitModal({
             onClick={onConfirm}
             className={`
               flex-1 px-4 py-3 rounded-lg font-medium transition-colors
-              ${allAnswered 
-                ? 'bg-green-600 hover:bg-green-700 text-white' 
-                : 'bg-orange-600 hover:bg-orange-700 text-white'
+              ${
+                allAnswered
+                  ? "bg-green-600 hover:bg-green-700 text-white"
+                  : "bg-orange-600 hover:bg-orange-700 text-white"
               }
             `}
           >

@@ -29,7 +29,7 @@ export class ModulesService {
     @InjectCourseModel('Course') private readonly courseModel: Model<Course>,
     @InjectModel(ModuleProgress.name)
     private readonly moduleProgressModel: Model<ModuleProgress>,
-  ) { }
+  ) {}
 
   async create(createModuleDto: CreateModuleDto, file?: Express.Multer.File) {
     // Validate all course IDs exist

@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { CreateQuestionDto } from '../question/dto/create-question.dto';
@@ -11,7 +20,7 @@ import { ParseObjectIdPipe } from '@common/pipes';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('quizzes')
 export class QuizController {
-  constructor(private readonly quizService: QuizService) { }
+  constructor(private readonly quizService: QuizService) {}
 
   //   @UseGuards(RolesGuard)
   @Post()
@@ -35,24 +44,26 @@ export class QuizController {
     return this.quizService.findAll();
   }
 
-
-  @Get(':moduleId/quizzes')  // ← EN PREMIER
+  @Get(':moduleId/quizzes') // ← EN PREMIER
   async getQuizzesByModule(@Param('moduleId') moduleId: string) {
     return this.quizService.getQuizzesByModule(moduleId);
   }
 
-  @Get(':quizId/questions')  // ← EN DEUXIÈME
+  @Get(':quizId/questions') // ← EN DEUXIÈME
   async getQuestionsByQuiz(@Param('quizId') quizId: string) {
     return this.quizService.getQuestionsByQuiz(quizId);
   }
 
-  @Get(':id')  // ← EN DERNIER
+  @Get(':id') // ← EN DERNIER
   async getQuizById(@Param('id') id: string) {
     return this.quizService.getQuizById(id);
   }
 
   @Patch(':id')
-  async updateQuiz(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() updateQuizDto: Partial<CreateQuizDto>) {
+  async updateQuiz(
+    @Param('id', ParseObjectIdPipe) id: ObjectId,
+    @Body() updateQuizDto: Partial<CreateQuizDto>,
+  ) {
     return this.quizService.updateQuiz(id, updateQuizDto);
   }
 

@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { StudentProgressReport, formateurApi } from '@/lib/formateur-api';
-import { 
-  ArrowLeft, 
-  BookOpen, 
-  CheckCircle2, 
-  TrendingUp, 
-  Clock, 
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { StudentProgressReport, formateurApi } from "@/lib/formateur-api";
+import {
+  ArrowLeft,
+  BookOpen,
+  CheckCircle2,
+  TrendingUp,
+  Clock,
   FileText,
   User,
   Mail,
   Calendar,
   Award,
   XCircle,
-  Loader2
-} from 'lucide-react';
+  Loader2,
+} from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import ProgressBar from '@/components/formateur/ProgressBar';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import ProgressBar from "@/components/formateur/ProgressBar";
 
 export default function StudentDetailPage() {
   const router = useRouter();
@@ -32,7 +32,8 @@ export default function StudentDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const fetchProgress = async () => {
     if (!token || !courseId || !studentId) return;
@@ -44,7 +45,7 @@ export default function StudentDetailPage() {
       const data = await formateurApi.getStudentProgress(courseId, studentId);
       setReport(data);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erreur lors du chargement');
+      setError(err.response?.data?.message || "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }
@@ -77,11 +78,13 @@ export default function StudentDetailPage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour
           </Button>
-          
+
           <Card className="shadow-lg">
             <CardContent className="p-8 text-center">
               <XCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
-              <h3 className="text-xl font-bold mb-2">{error || 'Données introuvables'}</h3>
+              <h3 className="text-xl font-bold mb-2">
+                {error || "Données introuvables"}
+              </h3>
               <Button onClick={fetchProgress} className="mt-4">
                 Réessayer
               </Button>
@@ -96,11 +99,7 @@ export default function StudentDetailPage() {
     <div className="min-h-screen bg-muted/40">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Back Button */}
-        <Button
-          variant="ghost"
-          onClick={() => router.back()}
-          className="mb-6"
-        >
+        <Button variant="ghost" onClick={() => router.back()} className="mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Retour à la liste
         </Button>
@@ -120,7 +119,7 @@ export default function StudentDetailPage() {
                     </h1>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2 text-primary-foreground/90">
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />
@@ -151,7 +150,9 @@ export default function StudentDetailPage() {
               <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4 border border-primary-foreground/20">
                 <div className="flex items-center gap-2 mb-2">
                   <CheckCircle2 className="w-5 h-5" />
-                  <p className="text-sm text-primary-foreground/80">Quiz réussis</p>
+                  <p className="text-sm text-primary-foreground/80">
+                    Quiz réussis
+                  </p>
                 </div>
                 <p className="text-2xl font-bold">
                   {report.totalQuizzesPassed}/{report.totalQuizzesTaken}
@@ -161,7 +162,9 @@ export default function StudentDetailPage() {
               <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4 border border-primary-foreground/20">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="w-5 h-5" />
-                  <p className="text-sm text-primary-foreground/80">Score moyen</p>
+                  <p className="text-sm text-primary-foreground/80">
+                    Score moyen
+                  </p>
                 </div>
                 <p className="text-2xl font-bold">{report.averageQuizScore}%</p>
               </div>
@@ -169,15 +172,20 @@ export default function StudentDetailPage() {
               <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-lg p-4 border border-primary-foreground/20">
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="w-5 h-5" />
-                  <p className="text-sm text-primary-foreground/80">Dernière activité</p>
+                  <p className="text-sm text-primary-foreground/80">
+                    Dernière activité
+                  </p>
                 </div>
                 <p className="text-lg font-bold">
                   {report.lastActivityAt
-                    ? new Date(report.lastActivityAt).toLocaleDateString('fr-FR', {
-                        day: 'numeric',
-                        month: 'short'
-                      })
-                    : 'Aucune'}
+                    ? new Date(report.lastActivityAt).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          day: "numeric",
+                          month: "short",
+                        },
+                      )
+                    : "Aucune"}
                 </p>
               </div>
             </div>
@@ -198,12 +206,17 @@ export default function StudentDetailPage() {
             {report.moduleProgress.length === 0 ? (
               <div className="text-center py-12">
                 <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground">Aucune progression enregistrée</p>
+                <p className="text-muted-foreground">
+                  Aucune progression enregistrée
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
                 {report.moduleProgress.map((module) => (
-                  <Card key={module.moduleId} className="border-muted hover:border-primary/50 transition-colors">
+                  <Card
+                    key={module.moduleId}
+                    className="border-muted hover:border-primary/50 transition-colors"
+                  >
                     <CardContent className="p-5">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
@@ -214,31 +227,39 @@ export default function StudentDetailPage() {
                             <div className="flex items-center gap-1.5">
                               <BookOpen className="w-4 h-4" />
                               <span>
-                                {module.completedLessons}/{module.totalLessons} leçons
+                                {module.completedLessons}/{module.totalLessons}{" "}
+                                leçons
                               </span>
                             </div>
                             <span className="text-muted-foreground/40">•</span>
                             <div className="flex items-center gap-1.5">
                               <Calendar className="w-4 h-4" />
                               <span>
-                                {new Date(module.lastAccessedAt).toLocaleDateString('fr-FR')}
+                                {new Date(
+                                  module.lastAccessedAt,
+                                ).toLocaleDateString("fr-FR")}
                               </span>
                             </div>
                           </div>
                         </div>
                         <div className="ml-4">
-                          <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${
-                            module.completionPercentage === 100
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                              : module.completionPercentage >= 50
-                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-                              : 'bg-muted text-muted-foreground'
-                          }`}>
+                          <span
+                            className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${
+                              module.completionPercentage === 100
+                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                                : module.completionPercentage >= 50
+                                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                                  : "bg-muted text-muted-foreground"
+                            }`}
+                          >
                             {module.completionPercentage}%
                           </span>
                         </div>
                       </div>
-                      <ProgressBar percentage={module.completionPercentage} showLabel={false} />
+                      <ProgressBar
+                        percentage={module.completionPercentage}
+                        showLabel={false}
+                      />
                     </CardContent>
                   </Card>
                 ))}
@@ -290,7 +311,10 @@ export default function StudentDetailPage() {
                   </thead>
                   <tbody className="divide-y">
                     {report.quizResults.map((quiz, idx) => (
-                      <tr key={idx} className="hover:bg-muted/50 transition-colors">
+                      <tr
+                        key={idx}
+                        className="hover:bg-muted/50 transition-colors"
+                      >
                         <td className="px-4 py-4">
                           <div className="text-sm font-medium">
                             {quiz.quizTitle}
@@ -326,11 +350,14 @@ export default function StudentDetailPage() {
                           Tentative {quiz.attemptNumber}
                         </td>
                         <td className="px-4 py-4 text-sm text-muted-foreground">
-                          {new Date(quiz.attemptedAt).toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric'
-                          })}
+                          {new Date(quiz.attemptedAt).toLocaleDateString(
+                            "fr-FR",
+                            {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            },
+                          )}
                         </td>
                       </tr>
                     ))}

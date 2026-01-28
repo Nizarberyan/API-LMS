@@ -60,7 +60,9 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    const users : User[] = await this.userModel.find({ $or:[{deletedAt: { $exists: false }},{deletedAt: null }]}).exec();
+    const users: User[] = await this.userModel
+      .find({ $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] })
+      .exec();
     return users;
   }
 

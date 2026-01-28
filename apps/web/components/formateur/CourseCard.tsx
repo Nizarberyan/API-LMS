@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Course } from '@/lib/formateur-api';
-import { Calendar, Users, ArrowRight, BookOpen } from 'lucide-react';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Course } from "@/lib/formateur-api";
+import { Calendar, Users, ArrowRight, BookOpen } from "lucide-react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 interface CourseCardProps {
   course: Course;
@@ -11,7 +11,7 @@ interface CourseCardProps {
 
 export default function CourseCard({ course, onClick }: CourseCardProps) {
   return (
-    <Card 
+    <Card
       onClick={onClick}
       className="w-full shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden group border-muted"
     >
@@ -26,7 +26,7 @@ export default function CourseCard({ course, onClick }: CourseCardProps) {
         <h3 className="text-xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
           {course.title}
         </h3>
-        
+
         <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
           {course.description}
         </p>
@@ -34,10 +34,10 @@ export default function CourseCard({ course, onClick }: CourseCardProps) {
         <div className="flex items-center gap-4 pt-4 border-t">
           <div className="flex items-center text-xs text-muted-foreground">
             <Calendar className="w-4 h-4 mr-1.5" />
-            {new Date(course.createdAt).toLocaleDateString('fr-FR', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric'
+            {new Date(course.createdAt).toLocaleDateString("fr-FR", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
             })}
           </div>
         </div>
