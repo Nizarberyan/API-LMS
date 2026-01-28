@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Course, getCourse } from "@/lib/courses";
 import {
   Card,
@@ -18,7 +18,6 @@ import Link from "next/link";
 
 export default function CourseDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

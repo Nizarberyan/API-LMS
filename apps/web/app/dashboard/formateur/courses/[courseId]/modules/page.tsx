@@ -52,6 +52,11 @@ export default function ModulesCrud() {
         const url = URL.createObjectURL(response.data);
         setFileUrl(url);
       } catch (err) {
+        if (err instanceof Error) {
+          setError(`Erreur lors du chargement du fichier. ${err.message}`);
+        } else {
+          setError("Erreur lors du chargement du fichier.");
+        }
         setFileUrl(null);
       }
     };
@@ -78,7 +83,11 @@ export default function ModulesCrud() {
         const res = await api.get(`/courses/${courseId}/modules`);
         setModules(res.data || []);
       } catch (err) {
-        setError("Erreur lors du chargement des modules.");
+        if (err instanceof Error) {
+          setError(`Erreur lors du chargement des modules. ${err.message}`);
+        } else {
+          setError("Erreur lors du chargement des modules.");
+        }
       } finally {
         setLoading(false);
       }
@@ -328,7 +337,7 @@ export default function ModulesCrud() {
                   name="description"
                   value={form.description}
                   onChange={handleChange}
-                  placeholder="Décrivez le contenu du module..."
+                  placeholder="Decrivez le contenu du module..."
                   rows={4}
                   className="w-full border border-gray-700 text-gray-100 bg-card rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition resize-none"
                   required
@@ -502,7 +511,7 @@ export default function ModulesCrud() {
             </div>
           ) : (
             <ul className="space-y-4">
-              {modules.map((module, index) => (
+              {modules.map((module) => (
                 <li
                   key={module._id}
                   onClick={() => setSelectedModule(module)}

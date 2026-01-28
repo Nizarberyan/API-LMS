@@ -24,7 +24,11 @@ export default function AdminCoursesPage() {
         const res = await api.get("/courses");
         setCourses(res.data || []);
       } catch (err) {
-        setError("Erreur lors du chargement des cours.");
+        if (err instanceof Error) {
+          setError(`Erreur lors du chargement des cours. ${err.message}`);
+        } else {
+          setError("Erreur lors du chargement des cours.");
+        }
       } finally {
         setLoading(false);
       }
@@ -43,7 +47,11 @@ export default function AdminCoursesPage() {
         const res = await api.get("/courses");
         setCourses(res.data || []);
       } catch (err) {
-        setError("Erreur lors du chargement des cours.");
+        if (err instanceof Error) {
+          setError(`Erreur lors du chargement des cours. ${err.message}`);
+        } else {
+          setError("Erreur lors du chargement des cours.");
+        }
       } finally {
         setLoading(false);
       }

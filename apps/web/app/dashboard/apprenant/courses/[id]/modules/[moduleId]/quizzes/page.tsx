@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import QuizList from "@/components/quiz/QuizList";
 import { FileText, BookOpen } from "lucide-react";
 

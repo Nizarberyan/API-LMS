@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import QuizResults from "@/components/quiz/QuizResults";
 
 interface PageProps {
