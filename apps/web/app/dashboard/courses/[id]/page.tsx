@@ -36,7 +36,7 @@ export default function CourseDetailPage() {
       const nextModule = res.data;
 
       if (nextModule && nextModule._id) {
-        router.push(`/dashboard/apprenant/courses/${params.id}/modules/${nextModule._id}`);
+        router.push(`/dashboard/apprenant/courses/${params.id}/modules/${nextModule._id}/quizzes`);
       } else {
         // Fallback to module list if something goes wrong or no modules
         router.push(`/dashboard/apprenant/courses/${params.id}/modules`);
@@ -175,20 +175,27 @@ export default function CourseDetailPage() {
           </div>
           <div className="pt-4 border-t">
             {userRole === "student" && (
-              <Button
-                size="lg"
-                onClick={handleStartLearning}
-                disabled={isStarting}
-              >
-                {isStarting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Starting...
-                  </>
-                ) : (
-                  "Start Learning"
-                )}
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  size="lg"
+                  onClick={handleStartLearning}
+                  disabled={isStarting}
+                >
+                  {isStarting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Starting...
+                    </>
+                  ) : (
+                    "Start Learning"
+                  )}
+                </Button>
+                <Button variant="outline" size="lg" asChild>
+                  <Link href={`/dashboard/apprenant/courses/${params.id}/modules`}>
+                    View Modules
+                  </Link>
+                </Button>
+              </div>
             )}
             {userRole === "teacher" && (
               <Button size="lg" asChild>
