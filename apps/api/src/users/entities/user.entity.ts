@@ -19,7 +19,7 @@ export class User extends Document {
   @Prop()
   profilePicture: string;
 
-  @Prop({ enum: Role, default: Role.STUDENT })
+  @Prop({ type: String, enum: Role, default: Role.STUDENT })
   role: Role;
 
   @Prop({ select: false })

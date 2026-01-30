@@ -6,7 +6,7 @@
   ],
   "rootDir": ".",
   "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
+  "testRegex": ".*\\.spec\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
@@ -14,14 +14,7 @@
     "^@src/(.*)$": "<rootDir>/../src/$1",
     "^@common/(.*)$": "<rootDir>/../src/common/$1",
     "^@users/(.*)$": "<rootDir>/../src/users/$1",
-    "^@auth/(.*)$": "<rootDir>/../src/auth/$1",
-    "^@email/(.*)$": "<rootDir>/../src/email/$1",
-    "^@modules/(.*)$": "<rootDir>/../src/modules/$1",
-    "^@courses/(.*)$": "<rootDir>/../src/courses/$1",
-    "^@enrollments/(.*)$": "<rootDir>/../src/enrollments/$1"
+    "^@auth/(.*)$": "<rootDir>/../src/auth/$1"
   },
-  "setupFilesAfterEnv": [
-    "<rootDir>/setup.ts"
-  ],
   "testTimeout": 30000
 }
