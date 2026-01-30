@@ -78,19 +78,17 @@ export default function ModulesPage() {
           {modules?.map((module) => (
             <div
               key={module._id}
-              className={`group relative rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${
-                module.isPublished
+              className={`group relative rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${module.isPublished
                   ? "bg-white border border-gray-200 hover:border-blue-300"
                   : "bg-gray-50 border border-gray-300"
-              }`}
+                }`}
             >
               {/* Barre de couleur latérale */}
               <div
-                className={`absolute left-0 top-0 bottom-0 w-1.5 ${
-                  module.isPublished
+                className={`absolute left-0 top-0 bottom-0 w-1.5 ${module.isPublished
                     ? "bg-gradient-to-b from-blue-500 to-purple-500"
                     : "bg-gray-400"
-                }`}
+                  }`}
               />
 
               <div className="p-6 pl-8">
@@ -99,11 +97,10 @@ export default function ModulesPage() {
                     {/* Numéro du module */}
                     <div className="flex items-center gap-3 mb-3">
                       <span
-                        className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold ${
-                          module.isPublished
+                        className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold ${module.isPublished
                             ? "bg-blue-100 text-blue-700"
                             : "bg-gray-300 text-gray-600"
-                        }`}
+                          }`}
                       >
                         {module.order}
                       </span>
