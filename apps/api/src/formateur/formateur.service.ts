@@ -123,6 +123,7 @@ export class FormateurService {
 
     const moduleProgress = this.mapModuleProgress(
       moduleProgressData,
+      
       courseModules,
     );
     const quizResults = this.mapQuizResults(quizAttempts);

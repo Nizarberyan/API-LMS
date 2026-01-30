@@ -16,7 +16,7 @@ export default function QuizNavigation({
   onSelectQuestion,
 }: QuizNavigationProps) {
   const isAnswered = (questionId: string) => {
-    return (answers[questionId]?.length ?? 0) > 0;
+   return (answers?.[questionId] || []).length > 0;
   };
 
   const answeredCount = questions.filter((q) => isAnswered(q._id)).length;
