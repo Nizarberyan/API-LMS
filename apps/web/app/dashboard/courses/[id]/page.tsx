@@ -108,7 +108,7 @@ export default function CourseDetailPage() {
                   <CardTitle className="text-2xl">{course.title}</CardTitle>
                   <CardDescription className="flex items-center gap-2 mt-1">
                     <User className="h-4 w-4" />
-                    {course.teacher.firstName} {course.teacher.lastName}
+                    {course.teacher ? `${course.teacher.firstName} ${course.teacher.lastName}` : "Unknown Teacher"}
                   </CardDescription>
                 </div>
               </div>
@@ -162,6 +162,6 @@ export default function CourseDetailPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }

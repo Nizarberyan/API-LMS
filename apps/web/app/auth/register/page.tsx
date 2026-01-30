@@ -24,6 +24,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import api from "@/lib/api";
@@ -42,6 +49,7 @@ export default function RegisterPage() {
       email: "",
       password: "",
       confirmPassword: "",
+      role: "student",
     },
   });
 
@@ -55,6 +63,7 @@ export default function RegisterPage() {
         password: values.password,
         firstName: values.firstName,
         lastName: values.lastName,
+        role: values.role,
       });
       if (response.status === 201 && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
@@ -164,6 +173,30 @@ export default function RegisterPage() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="student">Student</SelectItem>
+                        <SelectItem value="teacher">Teacher</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -241,6 +274,6 @@ export default function RegisterPage() {
           </p>
         </CardFooter>
       </Card>
-    </div>
+    </div >
   );
 }
