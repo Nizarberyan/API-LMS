@@ -66,3 +66,4 @@ PROJECT_PLAN.md
 /node_modules
 apps/api/node_modules
 apps/api/uploads
+uploads
