@@ -28,6 +28,16 @@ export class EnrollmentsService {
       throw new BadRequestException('Course ID does not exist');
     }
 
+    // Check for existing enrollment
+    const existingEnrollment = await this.enrollmentModel.findOne({
+      student,
+      course,
+    });
+
+    if (existingEnrollment) {
+      return existingEnrollment;
+    }
+
     const createdEnrollment = new this.enrollmentModel(createEnrollmentDto);
     return createdEnrollment.save();
   }
@@ -69,5 +79,13 @@ export class EnrollmentsService {
       .lean();
 
     return modules;
+  }
+
+  async checkEnrollment(courseId: string, studentId: string): Promise<boolean> {
+    const enrollment = await this.enrollmentModel.exists({
+      course: new Types.ObjectId(courseId),
+      student: new Types.ObjectId(studentId),
+    });
+    return !!enrollment;
   }
 }

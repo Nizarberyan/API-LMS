@@ -3,10 +3,10 @@ import { IsMongoId, IsNotEmpty } from 'class-validator';
 
 export class CreateEnrollmentDto {
   @IsNotEmpty()
-  @IsMongoId({ each: true })
-  student!: Types.ObjectId[];
+  @IsMongoId()
+  student: Types.ObjectId;
 
   @IsNotEmpty()
-  @IsMongoId({ each: true })
-  course!: Types.ObjectId[];
+  @IsMongoId()
+  course: Types.ObjectId;
 }

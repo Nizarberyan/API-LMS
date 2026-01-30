@@ -23,7 +23,10 @@ export default function CourseDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
+  const [isEnrolling, setIsEnrolling] = useState(false);
   const router = useRouter();
 
   const handleStartLearning = async () => {
@@ -60,6 +63,33 @@ export default function CourseDetailPage() {
     }
   };
 
+  const checkEnrollment = async (courseId: string, studentId: string) => {
+    try {
+      const res = await api.get(`/enrollments/check/${courseId}/${studentId}`);
+      setIsEnrolled(res.data);
+    } catch (err) {
+      console.error("Failed to check enrollment:", err);
+    }
+  };
+
+  const handleEnroll = async () => {
+    if (!userId || !params.id) return;
+    try {
+      setIsEnrolling(true);
+      await api.post("/enrollments", {
+        course: params.id,
+        student: userId,
+      });
+      setIsEnrolled(true);
+      // Optional: Show success toast
+    } catch (err) {
+      console.error("Failed to enroll:", err);
+      // Optional: Show error toast
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
+
   useEffect(() => {
     const fetchCourse = async () => {
       if (!params.id || typeof params.id !== "string") {
@@ -83,12 +113,20 @@ export default function CourseDetailPage() {
   }, [params.id]);
 
   useEffect(() => {
+    if (userId && params.id && typeof params.id === "string") {
+      checkEnrollment(params.id, userId);
+    }
+  }, [userId, params.id]);
+
+  useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await api.get("/auth/profile");
         setUserRole(res.data.role);
+        setUserId(res.data._id);
       } catch {
         setUserRole(null);
+        setUserId(null);
       }
     };
     fetchUser();
@@ -174,7 +212,7 @@ export default function CourseDetailPage() {
             </div>
           </div>
           <div className="pt-4 border-t">
-            {userRole === "student" && (
+            {userRole === "student" && isEnrolled && (
               <div className="flex gap-3">
                 <Button
                   size="lg"
@@ -196,6 +234,18 @@ export default function CourseDetailPage() {
                   </Link>
                 </Button>
               </div>
+            )}
+            {userRole === "student" && !isEnrolled && (
+              <Button size="lg" onClick={handleEnroll} disabled={isEnrolling}>
+                {isEnrolling ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enrolling...
+                  </>
+                ) : (
+                  "Enroll in Course"
+                )}
+              </Button>
             )}
             {userRole === "teacher" && (
               <Button size="lg" asChild>
