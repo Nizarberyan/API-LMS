@@ -56,7 +56,7 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
-  console.log(user);
+
   if (isLoading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">

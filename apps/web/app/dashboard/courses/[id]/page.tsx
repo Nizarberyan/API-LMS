@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Course, getCourse } from "@/lib/courses";
 import {
   Card,
@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, User, Calendar, BookOpen } from "lucide-react";
 import api from "@/lib/api";
+import { AxiosError } from "axios";
 import Link from "next/link";
 
 export default function CourseDetailPage() {
@@ -22,10 +23,45 @@ export default function CourseDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isStarting, setIsStarting] = useState(false);
+  const router = useRouter();
+
+  const handleStartLearning = async () => {
+    if (!params.id) return;
+
+    try {
+      setIsStarting(true);
+      // Fetch the module to resume from
+      const res = await api.get(`/courses/${params.id}/resume`);
+      const nextModule = res.data;
+
+      if (nextModule && nextModule._id) {
+        router.push(`/dashboard/apprenant/courses/${params.id}/modules/${nextModule._id}`);
+      } else {
+        // Fallback to module list if something goes wrong or no modules
+        router.push(`/dashboard/apprenant/courses/${params.id}/modules`);
+      }
+    } catch (err) {
+      const error = err as AxiosError;
+      if (error.response && error.response.status === 404) {
+        // No modules found or resume point not found - straightforward redirect to modules list
+        router.push(`/dashboard/apprenant/courses/${params.id}/modules`);
+      } else {
+        console.error("Failed to start learning:", err);
+        router.push(`/dashboard/apprenant/courses/${params.id}/modules`);
+      }
+    } finally {
+      // Don't set loading false immediately if we are navigating away, 
+      // but if we failed/fallback and didn't navigate, we might want to reset? 
+      // Actually often better to leave it spinning or handle error gracefully.
+      // For now, if we error'd and fellback, we are navigating anyway.
+      // If we failed completely, we might want to show a toast.
+      // Simply navigating to the list is a safe fallback.
+    }
+  };
 
   useEffect(() => {
     const fetchCourse = async () => {
-      console.log("Invalid course ID:", params.id);
       if (!params.id || typeof params.id !== "string") {
         setError("Invalid course ID");
         setIsLoading(false);
@@ -34,7 +70,6 @@ export default function CourseDetailPage() {
 
       try {
         const data = await getCourse(params.id);
-        console.log("Fetched course data:", data);
         setCourse(data);
       } catch (err) {
         console.error("Failed to fetch course:", err);
@@ -51,10 +86,8 @@ export default function CourseDetailPage() {
     const fetchUser = async () => {
       try {
         const res = await api.get("/auth/profile");
-        console.log("Profil utilisateur :", res.data);
         setUserRole(res.data.role);
-      } catch (err) {
-        console.error("Erreur profil :", err);
+      } catch {
         setUserRole(null);
       }
     };
@@ -142,12 +175,19 @@ export default function CourseDetailPage() {
           </div>
           <div className="pt-4 border-t">
             {userRole === "student" && (
-              <Button size="lg" asChild>
-                <Link
-                  href={`/dashboard/apprenant/courses/${params.id}/modules`}
-                >
-                  Start Learning
-                </Link>
+              <Button
+                size="lg"
+                onClick={handleStartLearning}
+                disabled={isStarting}
+              >
+                {isStarting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Starting...
+                  </>
+                ) : (
+                  "Start Learning"
+                )}
               </Button>
             )}
             {userRole === "teacher" && (
