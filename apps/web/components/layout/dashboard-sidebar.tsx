@@ -74,7 +74,7 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
           label: "Cours",
           icon: GraduationCap,
         },
-        { href: "/dashboard/admin", label: "Administration", icon: Shield },
+        
       );
     }
 

@@ -37,7 +37,7 @@ export default function ModulesPage() {
         const response = await api.get(
           `/enrollments/modules/${params.id}/${userId}`,
         );
-        console.log("Modules récupérés :", response);
+
         setModules(response.data || []);
       } catch {
         setError("Erreur lors du chargement des modules.");

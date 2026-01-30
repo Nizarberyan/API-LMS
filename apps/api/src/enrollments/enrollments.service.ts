@@ -13,7 +13,7 @@ export class EnrollmentsService {
     @InjectModel('User') private readonly userModel: Model<any>,
     @InjectModel('Course') private readonly courseModel: Model<any>,
     @InjectModel('Module') private readonly moduleModel: Model<any>,
-  ) {}
+  ) { }
 
   async create(createEnrollmentDto: CreateEnrollmentDto) {
     const { student, course } = createEnrollmentDto;
@@ -55,7 +55,7 @@ export class EnrollmentsService {
     });
 
     if (!enrollment) {
-      return { success: false, message: 'Enrollment not found', data: [] };
+      throw new BadRequestException('Enrollment not found');
     }
 
     const modules = await this.moduleModel
