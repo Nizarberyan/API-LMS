@@ -69,7 +69,7 @@ export default function EditCoursePage() {
           description: course.description || "",
           isPublished: course.isPublished,
         });
-      } catch (err) {
+      } catch {
         setError("Course not found");
       } finally {
         setIsLoading(false);
@@ -95,9 +95,10 @@ export default function EditCoursePage() {
       setTimeout(() => {
         router.push("/dashboard/teacher");
       }, 1000);
-    } catch (err: any) {
-      const message = err.response?.data?.message || "Failed to update course";
-      setError(Array.isArray(message) ? message[0] : message);
+    } catch (err: unknown) {
+      const apiError = err as { response?: { data?: { message?: string | string[] } } };
+      const message = apiError.response?.data?.message || "Failed to update course";
+      setError(Array.isArray(message) ? message[0] || "Failed to update course" : message);
     } finally {
       setIsSaving(false);
     }

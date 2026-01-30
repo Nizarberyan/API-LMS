@@ -44,6 +44,15 @@ interface User {
   role: string;
 }
 
+interface DebugLog {
+  id: string;
+  title: string;
+  teacherVal: unknown;
+  extractedTeacherId: string;
+  currentUserId: string;
+  isMatch: boolean;
+}
+
 export default function TeacherDashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -53,7 +62,7 @@ export default function TeacherDashboardPage() {
   const [statusFilter, setStatusFilter] = useState<
     "all" | "published" | "draft"
   >("all");
-  const [debugLogs, setDebugLogs] = useState<any[]>([]);
+  const [debugLogs, setDebugLogs] = useState<DebugLog[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,13 +75,15 @@ export default function TeacherDashboardPage() {
         setUser(profileRes.data);
 
         // Debugging Logic
-        const logs = coursesRes.map((c: any) => {
+        const logs = coursesRes.map((c) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const teacherVal = (c as any).teacher;
           const teacherId =
-            typeof c.teacher === "string" ? c.teacher : c.teacher?._id;
+            typeof teacherVal === "string" ? teacherVal : teacherVal?._id;
           return {
             id: c._id,
             title: c.title,
-            teacherVal: c.teacher,
+            teacherVal: teacherVal,
             extractedTeacherId: teacherId,
             currentUserId: profileRes.data._id,
             isMatch: String(teacherId) === String(profileRes.data._id),
@@ -182,7 +193,7 @@ export default function TeacherDashboardPage() {
               {debugLogs.length === 0 ? (
                 <p className="text-zinc-400">No courses fetched from API</p>
               ) : null}
-              {debugLogs.map((log: any) => (
+              {debugLogs.map((log) => (
                 <div
                   key={log.id}
                   className={

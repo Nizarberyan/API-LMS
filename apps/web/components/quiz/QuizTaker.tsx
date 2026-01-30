@@ -43,102 +43,108 @@ export default function QuizTaker({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const initializeQuiz = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Check authentication
+        const token = localStorage.getItem("token");
+        if (!token) {
+          router.push("/auth/login");
+          return;
+        }
+
+        let userId: string;
+        try {
+          interface DecodedToken {
+            sub?: string;
+            id?: string;
+            userId?: string;
+          }
+          const decoded = jwtDecode<DecodedToken>(token);
+          userId = decoded.sub || decoded.id || decoded.userId || "";
+
+          if (!userId) {
+            throw new Error("User ID not found in token");
+          }
+        } catch (e) {
+          console.error("Invalid token:", e);
+          router.push("/auth/login");
+          return;
+        }
+
+        // 1. Load basic quiz data
+        const [quizData, questionsData] = await Promise.all([
+          quizApi.getQuizById(quizId),
+          quizApi.getQuestionsByQuiz(quizId),
+        ]);
+
+        setQuiz(quizData);
+        setQuestions(questionsData);
+
+        // Initialize empty answers structure
+        const initialAnswers: Record<string, number[]> = {};
+        questionsData.forEach((q) => {
+          initialAnswers[q._id] = [];
+        });
+
+        // 2. Check for existing active attempt
+        const userAttempts = await quizApi.getAttemptsByQuiz(quizId);
+        const activeAttempt = userAttempts.find((a) => !a.completedAt);
+
+        if (activeAttempt) {
+          console.log("Resuming active attempt:", activeAttempt._id);
+          setAttempt(activeAttempt);
+
+          // Load existing answers for this attempt
+          try {
+            const existingAnswers = await quizApi.getAnswersByAttempt(
+              activeAttempt._id,
+            );
+            const restoredAnswers = { ...initialAnswers };
+
+            existingAnswers.forEach((ans) => {
+              if (ans.questionId) {
+                restoredAnswers[ans.questionId] = ans.selectedAnswers || [];
+              }
+            });
+
+            setAnswers(restoredAnswers);
+          } catch (err) {
+            console.error("Error loading existing answers:", err);
+            setAnswers(initialAnswers);
+          }
+        } else {
+          console.log("Creating new attempt");
+          // Create a new attempt
+          const attemptData: CreateQuizAttemptDto = {
+            quizId,
+            apprenantId: userId,
+          };
+
+          const newAttempt = await quizApi.createQuizAttempt(attemptData);
+          setAttempt(newAttempt);
+          setAnswers(initialAnswers);
+        }
+      } catch (err: unknown) {
+        console.error("Error initializing quiz:", err);
+        const apiError = err as { response?: { data?: { message?: string } }; message?: string };
+        setError(
+          apiError.response?.data?.message ||
+          apiError.message ||
+          "Erreur lors du chargement du quiz",
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (!initialized.current) {
       initialized.current = true;
       initializeQuiz();
     }
-  }, [quizId]);
-
-  const initializeQuiz = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Check authentication
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/auth/login");
-        return;
-      }
-
-      let userId: string;
-      try {
-        const decoded: any = jwtDecode(token);
-        userId = decoded.sub || decoded.id || decoded.userId;
-
-        if (!userId) {
-          throw new Error("User ID not found in token");
-        }
-      } catch (e) {
-        console.error("Invalid token:", e);
-        router.push("/auth/login");
-        return;
-      }
-
-      // 1. Load basic quiz data
-      const [quizData, questionsData] = await Promise.all([
-        quizApi.getQuizById(quizId),
-        quizApi.getQuestionsByQuiz(quizId),
-      ]);
-
-      setQuiz(quizData);
-      setQuestions(questionsData);
-
-      // Initialize empty answers structure
-      const initialAnswers: Record<string, number[]> = {};
-      questionsData.forEach((q) => {
-        initialAnswers[q._id] = [];
-      });
-
-      // 2. Check for existing active attempt
-      const userAttempts = await quizApi.getAttemptsByQuiz(quizId);
-      const activeAttempt = userAttempts.find((a) => !a.completedAt);
-
-      if (activeAttempt) {
-        console.log("Resuming active attempt:", activeAttempt._id);
-        setAttempt(activeAttempt);
-
-        // Load existing answers for this attempt
-        try {
-          const existingAnswers = await quizApi.getAnswersByAttempt(
-            activeAttempt._id,
-          );
-          const restoredAnswers = { ...initialAnswers };
-
-          existingAnswers.forEach((ans) => {
-            if (ans.questionId) {
-              restoredAnswers[ans.questionId] = ans.selectedAnswers || [];
-            }
-          });
-
-          setAnswers(restoredAnswers);
-        } catch (err) {
-          console.error("Error loading existing answers:", err);
-          setAnswers(initialAnswers);
-        }
-      } else {
-        console.log("Creating new attempt");
-        // Create a new attempt
-        const attemptData: CreateQuizAttemptDto = {
-          quizId,
-          apprenantId: userId,
-        };
-
-        const newAttempt = await quizApi.createQuizAttempt(attemptData);
-        setAttempt(newAttempt);
-        setAnswers(initialAnswers);
-      }
-    } catch (err: any) {
-      console.error("Error initializing quiz:", err);
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Erreur lors du chargement du quiz",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [quizId, router]);
 
   const handleAnswerChange = (
     questionId: string,
@@ -194,10 +200,11 @@ export default function QuizTaker({
       router.push(
         `/dashboard/apprenant/courses/${courseId}/modules/${moduleId}/quizzes/${quizId}/results/${finalizedAttempt._id}`,
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error submitting quiz:", err);
+      const apiError = err as { response?: { data?: { message?: string } } };
       setError(
-        err.response?.data?.message || "Erreur lors de la soumission du quiz",
+        apiError.response?.data?.message || "Erreur lors de la soumission du quiz",
       );
       setSubmitting(false);
     }

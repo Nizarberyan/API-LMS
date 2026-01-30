@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/form";
 import { Loader2, ArrowLeft, Save } from "lucide-react";
 import { createCourse } from "@/lib/courses";
-import api from "@/lib/api";
 import Link from "next/link";
 
 const courseSchema = z.object({
@@ -59,9 +58,10 @@ export default function CreateCoursePage() {
         description: values.description || "",
       });
       router.push("/dashboard/teacher");
-    } catch (err: any) {
-      const message = err.response?.data?.message || "Failed to create course";
-      setError(Array.isArray(message) ? message[0] : message);
+    } catch (err: unknown) {
+      const apiError = err as { response?: { data?: { message?: string | string[] } } };
+      const message = apiError.response?.data?.message || "Failed to create course";
+      setError(Array.isArray(message) ? message[0] || "Failed to create course" : message);
     } finally {
       setIsSaving(false);
     }

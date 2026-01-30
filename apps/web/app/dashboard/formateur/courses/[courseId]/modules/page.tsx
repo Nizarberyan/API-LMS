@@ -244,11 +244,10 @@ export default function ModulesCrud() {
               }
               setShowForm(!showForm);
             }}
-            className={`flex items-center gap-2 font-medium px-6 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl ${
-              showForm
+            className={`flex items-center gap-2 font-medium px-6 py-3 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl ${showForm
                 ? "bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600"
                 : "bg-gray-700 hover:bg-gray-800 text-white"
-            }`}
+              }`}
           >
             {showForm ? (
               <>
@@ -290,11 +289,10 @@ export default function ModulesCrud() {
 
         {/* Formulaire de création */}
         <div
-          className={`transition-all duration-300 ease-in-out overflow-hidden ${
-            showForm
+          className={`transition-all duration-300 ease-in-out overflow-hidden ${showForm
               ? "max-h-[800px] opacity-100 mb-8"
               : "max-h-0 opacity-0 mb-0"
-          }`}
+            }`}
         >
           <div className="bg-card border border-gray-700 rounded-xl p-6 shadow-lg">
             <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
@@ -346,7 +344,7 @@ export default function ModulesCrud() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-2">
-                  Ordre d'affichage
+                  Ordre d&apos;affichage
                 </label>
                 <input
                   name="order"
@@ -503,10 +501,10 @@ export default function ModulesCrud() {
                 />
               </svg>
               <p className="text-gray-300 text-lg">
-                Aucun module créé pour l'instant
+                Aucun module créé pour l&apos;instant
               </p>
               <p className="text-gray-400 text-sm mt-2">
-                Cliquez sur "Ajouter un module" pour commencer
+                Cliquez sur &quot;Ajouter un module&quot; pour commencer
               </p>
             </div>
           ) : (

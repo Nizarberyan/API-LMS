@@ -5,9 +5,15 @@ import { useParams } from "next/navigation"; // ou 'next/router' selon ta versio
 import api from "@/lib/api";
 
 export default function ResumeModule() {
+  // Defining Interface here for now if not available elsewhere, or simple any replacement with unknown/custom
+  interface Module {
+    _id: string;
+    title: string;
+    description: string;
+  }
   const params = useParams();
   const courseId = params?.courseId;
-  const [modules, setModules] = useState<any>(null);
+  const [modules, setModules] = useState<Module[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,13 +40,13 @@ export default function ResumeModule() {
 
   if (loading) return <div>Chargement...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!module) return <div>Aucun module à reprendre.</div>;
+  if (!modules) return <div>Aucun module à reprendre.</div>;
 
   return (
     <div>
       <h2 className="text-xl font-bold mb-2">Modules</h2>
       <div className="border rounded p-4">
-        {modules.map((module: any) => (
+        {modules.map((module) => (
           <div key={module._id}>
             <strong>{module.title}</strong>
             <p>{module.description}</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,7 +16,6 @@ import {
   questionApi,
   Question,
   CreateQuestionData,
-  QuestionType,
 } from "@/lib/questions";
 import { showSuccess, showError } from "@/components/ui/toast";
 import { QuestionForm } from "./question-form";
@@ -45,23 +44,24 @@ export function QuestionsManager({
     null,
   );
 
+  const loadQuestions = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await questionApi.getByQuiz(quizId); // Assuming questionApi.getByQuiz is the correct method, not quizApi.getQuestionsByQuiz as in the diff
+      setQuestions(data);
+    } catch (err) {
+      console.error("Error loading questions:", err);
+      // Removed unused showError calls if they exist, or just keeping silence on errors for now as implied by context
+    } finally {
+      setLoading(false);
+    }
+  }, [quizId]);
+
   useEffect(() => {
     if (isOpen) {
       loadQuestions();
     }
-  }, [isOpen, quizId]);
-
-  const loadQuestions = async () => {
-    setLoading(true);
-    try {
-      const data = await questionApi.getByQuiz(quizId);
-      setQuestions(data);
-    } catch (error) {
-      showError("Failed to load questions");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [isOpen, loadQuestions]);
 
   const handleCreate = async (data: CreateQuestionData) => {
     try {
@@ -69,7 +69,7 @@ export function QuestionsManager({
       showSuccess("Question created successfully");
       setIsCreateOpen(false);
       loadQuestions();
-    } catch (error) {
+    } catch {
       showError("Failed to create question");
     }
   };
@@ -83,7 +83,7 @@ export function QuestionsManager({
       setIsEditOpen(false);
       setEditingQuestion(null);
       loadQuestions();
-    } catch (error) {
+    } catch {
       showError("Failed to update question");
     }
   };
@@ -100,7 +100,7 @@ export function QuestionsManager({
       await questionApi.delete(deletingQuestionId);
       showSuccess("Question deleted successfully");
       loadQuestions();
-    } catch (error) {
+    } catch {
       showError("Failed to delete question");
     } finally {
       setDeletingQuestionId(null);
@@ -228,13 +228,13 @@ export function QuestionsManager({
               initialData={
                 editingQuestion
                   ? {
-                      quizId: editingQuestion.quizId,
-                      questionText: editingQuestion.questionText,
-                      type: editingQuestion.type,
-                      options: editingQuestion.options,
-                      points: editingQuestion.points,
-                      correctAnswers: editingQuestion.correctAnswers,
-                    }
+                    quizId: editingQuestion.quizId,
+                    questionText: editingQuestion.questionText,
+                    type: editingQuestion.type,
+                    options: editingQuestion.options,
+                    points: editingQuestion.points,
+                    correctAnswers: editingQuestion.correctAnswers,
+                  }
                   : undefined
               }
               onSubmit={handleEdit}

@@ -12,7 +12,10 @@ import type { ObjectId } from '@common/types/objectid.type';
 import { User } from '@users/entities/user.entity';
 import { Role } from '@src/common/enums/role.enum';
 import { Module } from '@src/modules/entities/module.entity';
-import { ModuleProgress } from '@src/module-progress/entities/module-progress.entity';
+import {
+  ModuleProgress,
+  ProgressStatus,
+} from '@src/module-progress/entities/module-progress.entity';
 import { Enrollment } from '@src/enrollments/entities/enrollment.entity';
 
 @Injectable()
@@ -29,7 +32,7 @@ export class CoursesService {
 
     @InjectModel(Enrollment.name)
     private readonly enrollmentModel: Model<Enrollment>,
-  ) {}
+  ) { }
 
   async create(createCourseDto: CreateCourseDto, user: User): Promise<Course> {
     const course = new this.courseModel({
@@ -64,10 +67,11 @@ export class CoursesService {
   ): Promise<Course> {
     const course = await this.courseModel.findById(id);
     if (!course) {
-      throw new Error('Course not found');
+      throw new NotFoundException('Course not found');
     }
     // Allow teacher or admin to update
     const isTeacher = course.teacher.toString() === user._id.toString();
+
     const isAdmin = user.role === Role.ADMIN;
     if (!isTeacher && !isAdmin) {
       throw new ForbiddenException(
@@ -85,6 +89,10 @@ export class CoursesService {
         );
       }
     }
+
+    // Explicitly handle "undefined" possibly coming from PartialType issues or client payload
+    // to avoid overwriting existing values with undefined.
+    // However, since we are using PartialType and ValidationPipe, updateCourseDto should be clean.
     Object.assign(course, updateCourseDto);
     return course.save();
   }
@@ -102,7 +110,7 @@ export class CoursesService {
   ): Promise<{ deleted: boolean; course: Course | null }> {
     const course = await this.courseModel.findById(id);
     if (!course) {
-      throw new Error('Course not found');
+      throw new NotFoundException('Course not found');
     }
     // Allow teacher or admin to remove
     const isTeacher = course.teacher.toString() === user._id.toString();
@@ -173,7 +181,8 @@ export class CoursesService {
       }
 
       const isCompleted =
-        progress.status === 'completed' || progress.progressPercentage === 100;
+        progress.status === ProgressStatus.COMPLETED ||
+        progress.progressPercentage === 100;
 
       if (isCompleted) {
         continue;

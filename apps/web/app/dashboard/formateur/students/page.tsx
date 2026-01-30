@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Course, formateurApi } from "@/lib/formateur-api";
 import { BookOpen, Users, Loader2, Plus, GraduationCap } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CourseCard from "@/components/formateur/CourseCard";
 
@@ -18,7 +18,7 @@ export default function StudentsPage() {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async () => {
     if (!token) {
       router.push("/login");
       return;
@@ -30,18 +30,19 @@ export default function StudentsPage() {
     try {
       const data = await formateurApi.getMyCourses();
       setCourses(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const apiError = err as { response?: { data?: { message?: string } } };
       setError(
-        err.response?.data?.message || "Erreur lors du chargement des cours",
+        apiError.response?.data?.message || "Erreur lors du chargement des cours",
       );
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, router]);
 
   useEffect(() => {
     fetchCourses();
-  }, [token]);
+  }, [fetchCourses]);
 
   if (loading) {
     return (
@@ -102,7 +103,7 @@ export default function StudentsPage() {
                 Aucun cours trouvé
               </h3>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                Vous n'avez pas encore créé de cours. Commencez par créer votre
+                Vous n&apos;avez pas encore créé de cours. Commencez par créer votre
                 premier cours pour suivre vos étudiants.
               </p>
               <Button
