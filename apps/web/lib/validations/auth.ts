@@ -15,6 +15,9 @@ export const registerSchema = z
       message: "Password must be at least 6 characters.",
     }),
     confirmPassword: z.string(),
+    role: z.enum(["student", "teacher"], {
+      message: "Please select a valid role.",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
