@@ -13,7 +13,7 @@ import { UpdateEnrollmentDto } from './dto/update-enrollment.dto';
 
 @Controller('enrollments')
 export class EnrollmentsController {
-  constructor(private readonly enrollmentsService: EnrollmentsService) {}
+  constructor(private readonly enrollmentsService: EnrollmentsService) { }
 
   @Post()
   create(@Body() createEnrollmentDto: CreateEnrollmentDto) {
@@ -36,6 +36,14 @@ export class EnrollmentsController {
     );
   }
 
+  @Get('check/:courseId/:studentId')
+  async checkEnrollment(
+    @Param('courseId') courseId: string,
+    @Param('studentId') studentId: string,
+  ) {
+    return this.enrollmentsService.checkEnrollment(courseId, studentId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.enrollmentsService.findOne(+id);
@@ -52,5 +60,10 @@ export class EnrollmentsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.enrollmentsService.remove(+id);
+  }
+
+  @Get('student/:studentId')
+  findStudentEnrollments(@Param('studentId') studentId: string) {
+    return this.enrollmentsService.findStudentEnrollments(studentId);
   }
 }

@@ -47,10 +47,15 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
 
     if (userRole === Role.STUDENT) {
       baseItems.push({
-        href: "/dashboard/courses",
+        href: "/dashboard/my-learning",
         label: "My Learning",
         icon: GraduationCap,
-      });
+      },
+        {
+          href: "/dashboard/courses",
+          label: "Browse Courses",
+          icon: BookOpen,
+        });
     }
 
     if (userRole === Role.TEACHER) {

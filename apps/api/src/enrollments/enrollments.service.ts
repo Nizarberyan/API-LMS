@@ -28,6 +28,16 @@ export class EnrollmentsService {
       throw new BadRequestException('Course ID does not exist');
     }
 
+    // Check for existing enrollment
+    const existingEnrollment = await this.enrollmentModel.findOne({
+      student,
+      course,
+    });
+
+    if (existingEnrollment) {
+      return existingEnrollment;
+    }
+
     const createdEnrollment = new this.enrollmentModel(createEnrollmentDto);
     return createdEnrollment.save();
   }
@@ -69,5 +79,26 @@ export class EnrollmentsService {
       .lean();
 
     return modules;
+  }
+
+  async checkEnrollment(courseId: string, studentId: string): Promise<boolean> {
+    const enrollment = await this.enrollmentModel.exists({
+      course: new Types.ObjectId(courseId),
+      student: new Types.ObjectId(studentId),
+    });
+    return !!enrollment;
+  }
+
+  async findStudentEnrollments(studentId: string) {
+    const enrollments = await this.enrollmentModel
+      .find({ student: new Types.ObjectId(studentId) })
+      .populate('course')
+      .exec();
+
+    // Filter out enrollments where course might be null (e.g. deleted courses)
+    // and return just the course objects if that's what the frontend expects,
+    // or return the enrollment objects with populated courses.
+    // Returning enrollments is safer as it contains enrollment date etc.
+    return enrollments.filter(e => e.course);
   }
 }
