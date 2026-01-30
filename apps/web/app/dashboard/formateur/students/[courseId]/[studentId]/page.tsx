@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { StudentProgressReport, formateurApi } from "@/lib/formateur-api";
 import {
@@ -35,7 +35,7 @@ export default function StudentDetailPage() {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  const fetchProgress = async () => {
+  const fetchProgress = useCallback(async () => {
     if (!token || !courseId || !studentId) return;
 
     setLoading(true);
@@ -44,16 +44,17 @@ export default function StudentDetailPage() {
     try {
       const data = await formateurApi.getStudentProgress(courseId, studentId);
       setReport(data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Erreur lors du chargement");
+    } catch (err: unknown) {
+      const apiError = err as { response?: { data?: { message?: string } } };
+      setError(apiError.response?.data?.message || "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, courseId, studentId]);
 
   useEffect(() => {
     fetchProgress();
-  }, [token, courseId, studentId]);
+  }, [fetchProgress]);
 
   if (loading) {
     return (
@@ -179,12 +180,12 @@ export default function StudentDetailPage() {
                 <p className="text-lg font-bold">
                   {report.lastActivityAt
                     ? new Date(report.lastActivityAt).toLocaleDateString(
-                        "fr-FR",
-                        {
-                          day: "numeric",
-                          month: "short",
-                        },
-                      )
+                      "fr-FR",
+                      {
+                        day: "numeric",
+                        month: "short",
+                      },
+                    )
                     : "Aucune"}
                 </p>
               </div>
@@ -244,13 +245,12 @@ export default function StudentDetailPage() {
                         </div>
                         <div className="ml-4">
                           <span
-                            className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${
-                              module.completionPercentage === 100
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                                : module.completionPercentage >= 50
-                                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                                  : "bg-muted text-muted-foreground"
-                            }`}
+                            className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${module.completionPercentage === 100
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                              : module.completionPercentage >= 50
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+                                : "bg-muted text-muted-foreground"
+                              }`}
                           >
                             {module.completionPercentage}%
                           </span>

@@ -42,7 +42,7 @@ export default function QuizzesPage() {
           return;
         }
         loadQuizzes();
-      } catch (error) {
+      } catch {
         showError("Accès refusé ou session expirée");
         router.replace("/auth/login");
       }
@@ -54,7 +54,7 @@ export default function QuizzesPage() {
     try {
       const data = await quizApi.getAll();
       setQuizzes(data);
-    } catch (error) {
+    } catch {
       showError("Failed to load quizzes");
     } finally {
       setLoading(false);
@@ -67,7 +67,7 @@ export default function QuizzesPage() {
       showSuccess("Quiz created successfully");
       setIsCreateOpen(false);
       loadQuizzes();
-    } catch (error) {
+    } catch {
       showError("Failed to create quiz");
     }
   };
@@ -81,7 +81,7 @@ export default function QuizzesPage() {
       setIsEditOpen(false);
       setEditingQuiz(null);
       loadQuizzes();
-    } catch (error) {
+    } catch {
       showError("Failed to update quiz");
     }
   };
@@ -98,7 +98,7 @@ export default function QuizzesPage() {
       await quizApi.delete(deletingQuizId);
       showSuccess("Quiz deleted successfully");
       loadQuizzes();
-    } catch (error) {
+    } catch {
       showError("Failed to delete quiz");
     } finally {
       setDeletingQuizId(null);
@@ -121,7 +121,6 @@ export default function QuizzesPage() {
     );
   }
 
-  console.log(quizzes);
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
@@ -189,14 +188,14 @@ export default function QuizzesPage() {
             initialData={
               editingQuiz
                 ? {
-                    moduleId:
-                      editingQuiz.moduleId != null
-                        ? editingQuiz.moduleId._id
-                        : "",
-                    title: editingQuiz.title,
-                    passingScore: editingQuiz.passingScore,
-                    isRequired: editingQuiz.isRequired,
-                  }
+                  moduleId:
+                    editingQuiz.moduleId != null
+                      ? editingQuiz.moduleId._id
+                      : "",
+                  title: editingQuiz.title,
+                  passingScore: editingQuiz.passingScore,
+                  isRequired: editingQuiz.isRequired,
+                }
                 : undefined
             }
             onSubmit={handleEdit}

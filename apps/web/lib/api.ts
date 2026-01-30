@@ -1,7 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
   headers: {
     "Content-Type": "application/json",
   },
@@ -12,14 +12,19 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
-let isRefreshing = false;
-let failedQueue: any[] = [];
+interface QueueItem {
+  resolve: (value: string) => void;
+  reject: (error: unknown) => void;
+}
 
-const processQueue = (error: any, token: string | null = null) => {
+let isRefreshing = false;
+let failedQueue: QueueItem[] = [];
+
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
-    } else {
+    } else if (token) {
       prom.resolve(token);
     }
   });
@@ -77,7 +82,7 @@ api.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/auth/refresh`,
+          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/auth/refresh`,
           {
             refreshToken,
           },

@@ -31,7 +31,7 @@ export const answerApi = {
     return response.data;
   },
 
-  submitQuiz: async (data: SubmitQuizDto): Promise<any> => {
+  submitQuiz: async (data: SubmitQuizDto): Promise<unknown> => {
     const response = await api.post("/answers/submit-quiz", data);
     return response.data;
   },

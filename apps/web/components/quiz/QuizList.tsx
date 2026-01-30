@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { quizApi, type Quiz } from "@/lib/quiz-api";
 import {
@@ -30,24 +30,27 @@ export default function QuizList({ moduleId, courseId }: QuizListProps) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    fetchQuizzes();
-  }, [moduleId]);
-
-  const fetchQuizzes = async () => {
+  // Moved fetchQuizzes here
+  const fetchQuizzes = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await quizApi.getQuizzesByModule(moduleId);
       setQuizzes(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const apiError = err as { response?: { data?: { message?: string } } };
       setError(
-        err.response?.data?.message || "Erreur lors du chargement des quiz",
+        apiError.response?.data?.message || "Erreur lors du chargement des quiz",
       );
     } finally {
       setLoading(false);
     }
-  };
+  }, [moduleId]);
+
+  // useEffect usage after definition
+  useEffect(() => {
+    fetchQuizzes();
+  }, [fetchQuizzes]);
 
   const handleStartQuiz = (quizId: string) => {
     router.push(

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -89,29 +90,29 @@ export default function EditProfilePage() {
     },
   });
 
-  const fetchProfile = async () => {
-    try {
-      const response = await api.get("/auth/profile");
-      form.reset({
-        firstName: response.data.firstName,
-        lastName: response.data.lastName,
-      });
-      if (response.data.profilePicture) {
-        // Handle both absolute URL (if implemented) or relative path
-        const avatarUrl = response.data.profilePicture.startsWith("http")
-          ? response.data.profilePicture
-          : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}${response.data.profilePicture}`;
-        setAvatarPreview(avatarUrl);
-      }
-    } catch (err) {
-      console.error("Failed to fetch profile:", err);
-      setError("Failed to load profile.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get("/auth/profile");
+        form.reset({
+          firstName: response.data.firstName,
+          lastName: response.data.lastName,
+        });
+        if (response.data.profilePicture) {
+          // Handle both absolute URL (if implemented) or relative path
+          const avatarUrl = response.data.profilePicture.startsWith("http")
+            ? response.data.profilePicture
+            : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}${response.data.profilePicture}`;
+          setAvatarPreview(avatarUrl);
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+        setError("Failed to load profile.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchProfile();
   }, [form]);
 
@@ -128,10 +129,12 @@ export default function EditProfilePage() {
       setTimeout(() => {
         router.push("/dashboard/profile");
       }, 1000);
-    } catch (err: any) {
-      const message =
-        err.response?.data?.message || "Failed to update profile.";
-      setError(Array.isArray(message) ? message[0] : message);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message =
+          err.response?.data?.message || "Failed to update profile.";
+        setError(Array.isArray(message) ? message[0] : message);
+      }
     } finally {
       setIsSaving(false);
     }
@@ -149,10 +152,12 @@ export default function EditProfilePage() {
       });
       setSuccess("Password changed successfully!");
       passwordForm.reset();
-    } catch (err: any) {
-      const message =
-        err.response?.data?.message || "Failed to change password.";
-      setError(Array.isArray(message) ? message[0] : message);
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message =
+          err.response?.data?.message || "Failed to change password.";
+        setError(Array.isArray(message) ? message[0] : message);
+      }
     } finally {
       setIsSaving(false);
     }
@@ -183,12 +188,15 @@ export default function EditProfilePage() {
       // Handle both absolute URL (if implemented) or relative path
       const avatarUrl = response.data.user.profilePicture.startsWith("http")
         ? response.data.user.profilePicture
-        : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}${response.data.user.profilePicture}`;
+        : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}${response.data.user.profilePicture}`;
       setAvatarPreview(avatarUrl);
       setSuccess("Avatar updated successfully!");
-    } catch (err: any) {
-      console.error("Upload failed", err);
-      setError("Failed to upload avatar.");
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        const message =
+          err.response?.data?.message || "Failed to upload avatar.";
+        setError(Array.isArray(message) ? message[0] : message);
+      }
     } finally {
       setIsUploading(false);
     }
@@ -229,9 +237,11 @@ export default function EditProfilePage() {
               >
                 <div className="h-24 w-24 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center border-2 border-border">
                   {avatarPreview ? (
-                    <img
+                    <Image
                       src={avatarPreview}
                       alt="Profile"
+                      width={96}
+                      height={96}
                       className="h-full w-full object-cover"
                     />
                   ) : (

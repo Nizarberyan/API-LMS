@@ -8,7 +8,6 @@ import {
   XCircle,
   Trophy,
   TrendingUp,
-  Clock,
   RotateCcw,
   Home,
 } from "lucide-react";
@@ -34,29 +33,29 @@ export default function QuizResults({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const loadResults = async () => {
+      try {
+        const [quizData, attemptData, answersData, questionsData] =
+          await Promise.all([
+            quizApi.getQuizById(quizId),
+            quizApi.getAttemptById(attemptId),
+            quizApi.getAnswersByAttempt(attemptId),
+            quizApi.getQuestionsByQuiz(quizId),
+          ]);
+
+        setQuiz(quizData);
+        setAttempt(attemptData);
+        setAnswers(answersData);
+        setQuestions(questionsData);
+      } catch (err) {
+        console.error("Error loading results:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadResults();
   }, [quizId, attemptId]);
-
-  const loadResults = async () => {
-    try {
-      const [quizData, attemptData, answersData, questionsData] =
-        await Promise.all([
-          quizApi.getQuizById(quizId),
-          quizApi.getAttemptById(attemptId),
-          quizApi.getAnswersByAttempt(attemptId),
-          quizApi.getQuestionsByQuiz(quizId),
-        ]);
-
-      setQuiz(quizData);
-      setAttempt(attemptData);
-      setAnswers(answersData);
-      setQuestions(questionsData);
-    } catch (err) {
-      console.error("Error loading results:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleRetry = () => {
     router.push(

@@ -27,7 +27,7 @@ export interface CreateQuestionData {
   correctAnswers: number[];
 }
 
-export interface UpdateQuestionData extends Partial<CreateQuestionData> {}
+export type UpdateQuestionData = Partial<CreateQuestionData>;
 
 export const questionApi = {
   // Get questions by quiz
