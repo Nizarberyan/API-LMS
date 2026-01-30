@@ -30,7 +30,7 @@ export interface CreateQuizData {
   isRequired: boolean;
 }
 
-export interface UpdateQuizData extends Partial<CreateQuizData> {}
+export type UpdateQuizData = Partial<CreateQuizData>;
 
 export const quizApi = {
   // Get all quizzes

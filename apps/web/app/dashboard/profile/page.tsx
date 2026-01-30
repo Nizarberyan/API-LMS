@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, User, Mail, Shield, Pencil } from "lucide-react";
 import api from "@/lib/api";
 import Link from "next/link";
+import Image from "next/image";
 
 interface UserProfile {
   email: string;
@@ -23,6 +24,12 @@ interface UserProfile {
 }
 
 export default function ProfilePage() {
+  // ... (keeping lines 26-70 unrelated to replacement scope)
+  // Wait, I cannot use ReplacementContent that skips lines unless I use multiple chunks or careful range.
+  // I will just do the import addition and the img replacement separately.
+  // Actually, I can do it in one go if I include the lines in between, but that's risky if they change.
+  // I'll use separate calls for cleaner diff.
+
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,13 +76,15 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 overflow-hidden border border-border">
                 {user.profilePicture ? (
-                  <img
+                  <Image
                     src={
                       user.profilePicture.startsWith("http")
                         ? user.profilePicture
-                        : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}${user.profilePicture}`
+                        : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}${user.profilePicture}`
                     }
                     alt="Profile"
+                    width={64}
+                    height={64}
                     className="h-full w-full object-cover"
                   />
                 ) : (

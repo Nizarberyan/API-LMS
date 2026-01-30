@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { StudentProgressReport, formateurApi } from "@/lib/formateur-api";
 import {
@@ -31,7 +31,7 @@ export default function CourseStudentsPage() {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  const fetchProgress = async () => {
+  const fetchProgress = useCallback(async () => {
     if (!token || !courseId) return;
 
     setLoading(true);
@@ -40,16 +40,17 @@ export default function CourseStudentsPage() {
     try {
       const data = await formateurApi.getCourseProgress(courseId);
       setReports(data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Erreur lors du chargement");
+    } catch (err: unknown) {
+      const apiError = err as { response?: { data?: { message?: string } } };
+      setError(apiError.response?.data?.message || "Erreur lors du chargement");
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, courseId]);
 
   useEffect(() => {
     fetchProgress();
-  }, [token, courseId]);
+  }, [fetchProgress]);
 
   if (loading) {
     return (
@@ -121,7 +122,7 @@ export default function CourseStudentsPage() {
                 Aucun étudiant inscrit
               </h3>
               <p className="text-muted-foreground">
-                Aucun étudiant ne s'est encore inscrit à ce cours
+                Aucun étudiant ne s&apos;est encore inscrit à ce cours
               </p>
             </CardContent>
           </Card>
@@ -203,8 +204,8 @@ export default function CourseStudentsPage() {
                             <Calendar className="w-4 h-4" />
                             {report.lastActivityAt
                               ? new Date(
-                                  report.lastActivityAt,
-                                ).toLocaleDateString("fr-FR")
+                                report.lastActivityAt,
+                              ).toLocaleDateString("fr-FR")
                               : "Aucune"}
                           </div>
                         </td>
