@@ -8,7 +8,7 @@ export interface Course {
     _id: string;
     firstName: string;
     lastName: string;
-  };
+  } | null;
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
