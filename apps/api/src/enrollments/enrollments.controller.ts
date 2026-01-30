@@ -61,4 +61,9 @@ export class EnrollmentsController {
   remove(@Param('id') id: string) {
     return this.enrollmentsService.remove(+id);
   }
+
+  @Get('student/:studentId')
+  findStudentEnrollments(@Param('studentId') studentId: string) {
+    return this.enrollmentsService.findStudentEnrollments(studentId);
+  }
 }
