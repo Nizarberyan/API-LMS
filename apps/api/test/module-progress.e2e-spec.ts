@@ -75,7 +75,7 @@ describe('ModuleProgressController (e2e)', () => {
                 .send({
                     apprenantId,
                     enrollmentId,
-                    progressPercentage: 100,
+               progressPercentage: 100,
                     status: ProgressStatus.COMPLETED,
                     isLocked: false,
                 })
