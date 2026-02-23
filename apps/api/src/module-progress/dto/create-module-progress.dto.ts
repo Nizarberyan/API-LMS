@@ -1,4 +1,4 @@
-import { IsEnum, IsMongoId, IsNumber, IsBoolean } from 'class-validator';
+import { IsEnum, IsMongoId, IsNumber, IsBoolean, Min, Max } from 'class-validator';
 import { ProgressStatus } from '../entities/module-progress.entity';
 
 export class CreateModuleProgressDto {
@@ -9,6 +9,8 @@ export class CreateModuleProgressDto {
   enrollmentId: string;
 
   @IsNumber()
+  @Min(0)
+  @Max(100)
   progressPercentage: number;
 
   @IsEnum(ProgressStatus)

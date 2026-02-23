@@ -1,41 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { ModuleProgressService } from '../src/module-progress/module-progress.service';
-import { ModuleProgress, ProgressStatus } from '../src/module-progress/entities/module-progress.entity';
+import { ModuleProgress, ProgressStatus } from '../src/module-progress/entities/module-progress.entity'
+import { CreateModuleProgressDto } from '../src/module-progress/dto/create-module-progress.dto';
+import { UpdateModuleProgressDto } from '../src/module-progress/dto/update-module-progress.dto';
 
-describe('ModuleProgressService - Unit Tests', () => {
+const mockModuleProgressModel = {
+  findOneAndUpdate: jest.fn(),
+  findOne: jest.fn(),
+};
+
+describe('ModuleProgressService', () => {
   let service: ModuleProgressService;
-  let model: Model<ModuleProgress>;
-
-  // Mock data
-  const mockObjectId = new Types.ObjectId();
-  const mockApprenantId = new Types.ObjectId();
-  const mockModuleId = new Types.ObjectId();
-  const mockEnrollmentId = new Types.ObjectId();
-
-  const mockModuleProgress = {
-    _id: mockObjectId,
-    apprenantId: mockApprenantId,
-    moduleId: mockModuleId,
-    enrollmentId: mockEnrollmentId,
-    progressPercentage: 50,
-    status: ProgressStatus.IN_PROGRESS,
-    isLocked: false,
-    startedAt: new Date(),
-    completedAt: null,
-  };
-
-  // Mock model methods
-  const mockModuleProgressModel = {
-    findOneAndUpdate: jest.fn(),
-    findOne: jest.fn(),
-    create: jest.fn(),
-    find: jest.fn(),
-    findById: jest.fn(),
-    findByIdAndUpdate: jest.fn(),
-    findByIdAndDelete: jest.fn(),
-  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -49,425 +26,435 @@ describe('ModuleProgressService - Unit Tests', () => {
     }).compile();
 
     service = module.get<ModuleProgressService>(ModuleProgressService);
-    model = module.get<Model<ModuleProgress>>(getModelToken(ModuleProgress.name));
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
 
-  describe('updateOrCreate', () => {
-    it('should create new progress when it does not exist', async () => {
-      const progressData = {
-        apprenantId: mockApprenantId,
-        moduleId: mockModuleId,
-        enrollmentId: mockEnrollmentId,
-        progressPercentage: 25,
-        status: ProgressStatus.IN_PROGRESS,
-        isLocked: false,
-      };
 
-      const expectedResult = {
-        ...mockModuleProgress,
-        ...progressData,
-      };
 
-      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue(expectedResult);
+  // ════════════════════════════════════════════════════════════════
+  // updateOrCreate()
+  // ════════════════════════════════════════════════════════════════
 
-      const result = await service.updateOrCreate(
-        progressData.apprenantId,
-        progressData.moduleId,
-        progressData.enrollmentId,
-        progressData.progressPercentage,
-        progressData.status,
-        progressData.isLocked,
-      );
+  describe('updateOrCreate()', () => {
+    let apprenantId: Types.ObjectId;
+    let moduleId: Types.ObjectId;
+    let enrollmentId: Types.ObjectId;
 
-      expect(mockModuleProgressModel.findOneAndUpdate).toHaveBeenCalledWith(
-        {
-          apprenantId: progressData.apprenantId,
-          moduleId: progressData.moduleId,
-          enrollmentId: progressData.enrollmentId,
-        },
-        {
-          $set: {
-            progressPercentage: progressData.progressPercentage,
-            status: progressData.status,
-            isLocked: progressData.isLocked,
-          },
-        },
-        { upsert: true, new: true },
-      );
-
-      expect(result).toEqual(expectedResult);
+    beforeEach(() => {
+      apprenantId = new Types.ObjectId();
+      moduleId = new Types.ObjectId();
+      enrollmentId = new Types.ObjectId();
     });
 
-    it('should update existing progress', async () => {
-      const progressData = {
-        apprenantId: mockApprenantId,
-        moduleId: mockModuleId,
-        enrollmentId: mockEnrollmentId,
+    // ── Filtre de recherche ──────────────────────────────────────
+
+    it('devrait appeler findOneAndUpdate avec le bon filtre (apprenantId, moduleId, enrollmentId)', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        50, ProgressStatus.IN_PROGRESS, false,
+      );
+
+      const [filter] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(filter).toEqual({ apprenantId, moduleId, enrollmentId });
+    });
+
+    // ── Options upsert / new ─────────────────────────────────────
+
+    it('devrait toujours passer { upsert: true, new: true } en options', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        50, ProgressStatus.IN_PROGRESS, false,
+      );
+
+      const [, , options] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(options).toEqual({ upsert: true, new: true });
+    });
+
+    // ── ProgressStatus.NOT_STARTED ───────────────────────────────
+
+    it('devrait mettre à jour avec status NOT_STARTED sans completedAt', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        0, ProgressStatus.NOT_STARTED, true,
+      );
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set.status).toBe(ProgressStatus.NOT_STARTED);
+      expect(update.$set.progressPercentage).toBe(0);
+      expect(update.$set.isLocked).toBe(true);
+      expect(update.$set).not.toHaveProperty('completedAt');
+    });
+
+    // ── ProgressStatus.IN_PROGRESS ───────────────────────────────
+
+    it('devrait mettre à jour avec status IN_PROGRESS sans completedAt', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        60, ProgressStatus.IN_PROGRESS, false,
+      );
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set.status).toBe(ProgressStatus.IN_PROGRESS);
+      expect(update.$set.progressPercentage).toBe(60);
+      expect(update.$set.isLocked).toBe(false);
+      expect(update.$set).not.toHaveProperty('completedAt');
+    });
+
+    // ── ProgressStatus.COMPLETED ─────────────────────────────────
+
+    it('devrait inclure completedAt quand status === COMPLETED', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      const before = new Date();
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        100, ProgressStatus.COMPLETED, false,
+      );
+      const after = new Date();
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set).toHaveProperty('completedAt');
+      expect(update.$set.completedAt).toBeInstanceOf(Date);
+      expect(update.$set.completedAt.getTime()).toBeGreaterThanOrEqual(before.getTime());
+      expect(update.$set.completedAt.getTime()).toBeLessThanOrEqual(after.getTime());
+    });
+
+    it('devrait avoir progressPercentage = 100 et isLocked = false quand COMPLETED', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        100, ProgressStatus.COMPLETED, false,
+      );
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set.progressPercentage).toBe(100);
+      expect(update.$set.isLocked).toBe(false);
+      expect(update.$set.status).toBe(ProgressStatus.COMPLETED);
+    });
+
+    it('devrait inclure completedAt même si isLocked = true et status = COMPLETED', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        100, ProgressStatus.COMPLETED, true,
+      );
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set).toHaveProperty('completedAt');
+      expect(update.$set.isLocked).toBe(true);
+    });
+
+    // ── isLocked variations ──────────────────────────────────────
+
+    it('devrait passer isLocked = true correctement', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        0, ProgressStatus.NOT_STARTED, true,
+      );
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set.isLocked).toBe(true);
+    });
+
+    it('devrait passer isLocked = false correctement', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        50, ProgressStatus.IN_PROGRESS, false,
+      );
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set.isLocked).toBe(false);
+    });
+
+    // ── progressPercentage limites ───────────────────────────────
+
+    it('devrait accepter progressPercentage = 0 (début)', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        0, ProgressStatus.NOT_STARTED, false,
+      );
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set.progressPercentage).toBe(0);
+    });
+
+    it('devrait accepter progressPercentage = 100 (fin)', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        100, ProgressStatus.COMPLETED, false,
+      );
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set.progressPercentage).toBe(100);
+    });
+
+    it('devrait accepter progressPercentage intermédiaire (ex: 47)', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({});
+
+      await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        47, ProgressStatus.IN_PROGRESS, false,
+      );
+
+      const [, update] = mockModuleProgressModel.findOneAndUpdate.mock.calls[0];
+      expect(update.$set.progressPercentage).toBe(47);
+    });
+
+    // ── Valeur de retour ─────────────────────────────────────────
+
+    it('devrait retourner le document mis à jour', async () => {
+      const mockDoc = {
+        _id: new Types.ObjectId(),
+        apprenantId,
+        moduleId,
+        enrollmentId,
         progressPercentage: 75,
         status: ProgressStatus.IN_PROGRESS,
         isLocked: false,
       };
-
-      const expectedResult = {
-        ...mockModuleProgress,
-        progressPercentage: 75,
-      };
-
-      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue(expectedResult);
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue(mockDoc);
 
       const result = await service.updateOrCreate(
-        progressData.apprenantId,
-        progressData.moduleId,
-        progressData.enrollmentId,
-        progressData.progressPercentage,
-        progressData.status,
-        progressData.isLocked,
+        apprenantId, moduleId, enrollmentId,
+        75, ProgressStatus.IN_PROGRESS, false,
       );
 
-      expect(result).toEqual(expectedResult);
-      expect(mockModuleProgressModel.findOneAndUpdate).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(mockDoc);
     });
 
-    it('should set completedAt when status is COMPLETED', async () => {
-      const progressData = {
-        apprenantId: mockApprenantId,
-        moduleId: mockModuleId,
-        enrollmentId: mockEnrollmentId,
-        progressPercentage: 100,
-        status: ProgressStatus.COMPLETED,
-        isLocked: false,
-      };
-
-      const completedDate = new Date();
-      const expectedResult = {
-        ...mockModuleProgress,
-        progressPercentage: 100,
-        status: ProgressStatus.COMPLETED,
-        completedAt: completedDate,
-      };
-
-      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue(expectedResult);
+    it('devrait retourner null si le modèle retourne null', async () => {
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue(null);
 
       const result = await service.updateOrCreate(
-        progressData.apprenantId,
-        progressData.moduleId,
-        progressData.enrollmentId,
-        progressData.progressPercentage,
-        progressData.status,
-        progressData.isLocked,
+        apprenantId, moduleId, enrollmentId,
+        0, ProgressStatus.NOT_STARTED, false,
       );
-
-      expect(mockModuleProgressModel.findOneAndUpdate).toHaveBeenCalledWith(
-        {
-          apprenantId: progressData.apprenantId,
-          moduleId: progressData.moduleId,
-          enrollmentId: progressData.enrollmentId,
-        },
-        {
-          $set: expect.objectContaining({
-            progressPercentage: progressData.progressPercentage,
-            status: progressData.status,
-            isLocked: progressData.isLocked,
-            completedAt: expect.any(Date),
-          }),
-        },
-        { upsert: true, new: true },
-      );
-
-      expect(result.status).toBe(ProgressStatus.COMPLETED);
-      expect(result.completedAt).toBeDefined();
-    });
-
-    it('should not set completedAt when status is IN_PROGRESS', async () => {
-      const progressData = {
-        apprenantId: mockApprenantId,
-        moduleId: mockModuleId,
-        enrollmentId: mockEnrollmentId,
-        progressPercentage: 50,
-        status: ProgressStatus.IN_PROGRESS,
-        isLocked: false,
-      };
-
-      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue(mockModuleProgress);
-
-      await service.updateOrCreate(
-        progressData.apprenantId,
-        progressData.moduleId,
-        progressData.enrollmentId,
-        progressData.progressPercentage,
-        progressData.status,
-        progressData.isLocked,
-      );
-
-      const callArgs = mockModuleProgressModel.findOneAndUpdate.mock.calls[0][1];
-      expect(callArgs.$set).not.toHaveProperty('completedAt');
-    });
-
-    it('should not set completedAt when status is NOT_STARTED', async () => {
-      const progressData = {
-        apprenantId: mockApprenantId,
-        moduleId: mockModuleId,
-        enrollmentId: mockEnrollmentId,
-        progressPercentage: 0,
-        status: ProgressStatus.NOT_STARTED,
-        isLocked: true,
-      };
-
-      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({
-        ...mockModuleProgress,
-        ...progressData,
-      });
-
-      await service.updateOrCreate(
-        progressData.apprenantId,
-        progressData.moduleId,
-        progressData.enrollmentId,
-        progressData.progressPercentage,
-        progressData.status,
-        progressData.isLocked,
-      );
-
-      const callArgs = mockModuleProgressModel.findOneAndUpdate.mock.calls[0][1];
-      expect(callArgs.$set).not.toHaveProperty('completedAt');
-    });
-
-    it('should handle LOCKED status', async () => {
-      const progressData = {
-        apprenantId: mockApprenantId,
-        moduleId: mockModuleId,
-        enrollmentId: mockEnrollmentId,
-        progressPercentage: 0,
-        status: ProgressStatus.LOCKED,
-        isLocked: true,
-      };
-
-      const expectedResult = {
-        ...mockModuleProgress,
-        ...progressData,
-      };
-
-      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue(expectedResult);
-
-      const result = await service.updateOrCreate(
-        progressData.apprenantId,
-        progressData.moduleId,
-        progressData.enrollmentId,
-        progressData.progressPercentage,
-        progressData.status,
-        progressData.isLocked,
-      );
-
-      expect(result.status).toBe(ProgressStatus.LOCKED);
-      expect(result.isLocked).toBe(true);
-    });
-
-    it('should handle different progress percentages', async () => {
-      const testCases = [
-        { percentage: 0, status: ProgressStatus.NOT_STARTED },
-        { percentage: 25, status: ProgressStatus.IN_PROGRESS },
-        { percentage: 50, status: ProgressStatus.IN_PROGRESS },
-        { percentage: 75, status: ProgressStatus.IN_PROGRESS },
-        { percentage: 100, status: ProgressStatus.COMPLETED },
-      ];
-
-      for (const testCase of testCases) {
-        mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({
-          ...mockModuleProgress,
-          progressPercentage: testCase.percentage,
-          status: testCase.status,
-        });
-
-        const result = await service.updateOrCreate(
-          mockApprenantId,
-          mockModuleId,
-          mockEnrollmentId,
-          testCase.percentage,
-          testCase.status,
-          false,
-        );
-
-        expect(result.progressPercentage).toBe(testCase.percentage);
-        expect(result.status).toBe(testCase.status);
-      }
-    });
-
-    it('should unlock module when isLocked is false', async () => {
-      const progressData = {
-        apprenantId: mockApprenantId,
-        moduleId: mockModuleId,
-        enrollmentId: mockEnrollmentId,
-        progressPercentage: 0,
-        status: ProgressStatus.NOT_STARTED,
-        isLocked: false,
-      };
-
-      const expectedResult = {
-        ...mockModuleProgress,
-        ...progressData,
-      };
-
-      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue(expectedResult);
-
-      const result = await service.updateOrCreate(
-        progressData.apprenantId,
-        progressData.moduleId,
-        progressData.enrollmentId,
-        progressData.progressPercentage,
-        progressData.status,
-        progressData.isLocked,
-      );
-
-      expect(result.isLocked).toBe(false);
-    });
-
-    it('should handle all ProgressStatus enum values', async () => {
-      const statuses = [
-        ProgressStatus.NOT_STARTED,
-        ProgressStatus.IN_PROGRESS,
-        ProgressStatus.COMPLETED,
-        ProgressStatus.LOCKED,
-      ];
-
-      for (const status of statuses) {
-        mockModuleProgressModel.findOneAndUpdate.mockResolvedValue({
-          ...mockModuleProgress,
-          status,
-        });
-
-        const result = await service.updateOrCreate(
-          mockApprenantId,
-          mockModuleId,
-          mockEnrollmentId,
-          50,
-          status,
-          false,
-        );
-
-        expect(result.status).toBe(status);
-      }
-    });
-  });
-
-  describe('getByModuleAndUser', () => {
-    it('should return progress for given module and user', async () => {
-      mockModuleProgressModel.findOne.mockResolvedValue(mockModuleProgress);
-
-      const result = await service.getByModuleAndUser(mockModuleId, mockApprenantId);
-
-      expect(mockModuleProgressModel.findOne).toHaveBeenCalledWith({
-        moduleId: mockModuleId,
-        apprenantId: mockApprenantId,
-      });
-
-      expect(result).toEqual(mockModuleProgress);
-      expect(result?.status).toBe(ProgressStatus.IN_PROGRESS);
-    });
-
-    it('should return null when no progress found', async () => {
-      mockModuleProgressModel.findOne.mockResolvedValue(null);
-
-      const result = await service.getByModuleAndUser(mockModuleId, mockApprenantId);
 
       expect(result).toBeNull();
     });
 
-    it('should handle different ObjectIds', async () => {
-      const differentModuleId = new Types.ObjectId();
-      const differentApprenantId = new Types.ObjectId();
+    // ── Création (upsert) ────────────────────────────────────────
 
-      mockModuleProgressModel.findOne.mockResolvedValue(null);
+    it('devrait créer un nouveau document si aucun n\'existe (upsert)', async () => {
+      const newDoc = {
+        _id: new Types.ObjectId(),
+        apprenantId,
+        moduleId,
+        enrollmentId,
+        progressPercentage: 0,
+        status: ProgressStatus.NOT_STARTED,
+        isLocked: true,
+      };
+      mockModuleProgressModel.findOneAndUpdate.mockResolvedValue(newDoc);
 
-      await service.getByModuleAndUser(differentModuleId, differentApprenantId);
+      const result = await service.updateOrCreate(
+        apprenantId, moduleId, enrollmentId,
+        0, ProgressStatus.NOT_STARTED, true,
+      );
+
+      expect(mockModuleProgressModel.findOneAndUpdate).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(newDoc);
+    });
+
+  });
+
+  // ════════════════════════════════════════════════════════════════
+  // getByModuleAndUser()
+  // ════════════════════════════════════════════════════════════════
+
+  describe('getByModuleAndUser()', () => {
+    let moduleId: Types.ObjectId;
+    let apprenantId: Types.ObjectId;
+
+    beforeEach(() => {
+      moduleId = new Types.ObjectId();
+      apprenantId = new Types.ObjectId();
+    });
+
+    // ── Filtre correct ───────────────────────────────────────────
+
+    it('devrait appeler findOne avec { moduleId, apprenantId }', async () => {
+      mockModuleProgressModel.findOne.mockResolvedValue({});
+
+      await service.getByModuleAndUser(moduleId, apprenantId);
 
       expect(mockModuleProgressModel.findOne).toHaveBeenCalledWith({
-        moduleId: differentModuleId,
-        apprenantId: differentApprenantId,
+        moduleId,
+        apprenantId,
       });
     });
 
-    it('should call findOne exactly once', async () => {
-      mockModuleProgressModel.findOne.mockResolvedValue(mockModuleProgress);
+    it('devrait appeler findOne exactement une fois', async () => {
+      mockModuleProgressModel.findOne.mockResolvedValue({});
 
-      await service.getByModuleAndUser(mockModuleId, mockApprenantId);
+      await service.getByModuleAndUser(moduleId, apprenantId);
 
       expect(mockModuleProgressModel.findOne).toHaveBeenCalledTimes(1);
     });
 
-    it('should return progress with completed status', async () => {
-      const completedProgress = {
-        ...mockModuleProgress,
-        status: ProgressStatus.COMPLETED,
-        progressPercentage: 100,
-        completedAt: new Date(),
+    // ── Document trouvé ──────────────────────────────────────────
+
+    it('devrait retourner le document trouvé avec toutes ses propriétés', async () => {
+      const mockDoc = {
+        _id: new Types.ObjectId(),
+        moduleId,
+        apprenantId,
+        progressPercentage: 80,
+        status: ProgressStatus.IN_PROGRESS,
+        isLocked: false,
+        completedAt: null,
       };
+      mockModuleProgressModel.findOne.mockResolvedValue(mockDoc);
 
-      mockModuleProgressModel.findOne.mockResolvedValue(completedProgress);
+      const result = await service.getByModuleAndUser(moduleId, apprenantId);
 
-      const result = await service.getByModuleAndUser(mockModuleId, mockApprenantId);
-
-      expect(result?.status).toBe(ProgressStatus.COMPLETED);
-      expect(result?.progressPercentage).toBe(100);
-      expect(result?.completedAt).toBeDefined();
+      expect(result).toEqual(mockDoc);
     });
 
-    it('should return progress with locked status', async () => {
-      const lockedProgress = {
-        ...mockModuleProgress,
-        status: ProgressStatus.LOCKED,
+    it('devrait retourner un document avec status COMPLETED et completedAt', async () => {
+      const completedAt = new Date();
+      const mockDoc = {
+        _id: new Types.ObjectId(),
+        moduleId,
+        apprenantId,
+        progressPercentage: 100,
+        status: ProgressStatus.COMPLETED,
+        isLocked: false,
+        completedAt,
+      };
+      mockModuleProgressModel.findOne.mockResolvedValue(mockDoc);
+
+      const result = await service.getByModuleAndUser(moduleId, apprenantId);
+
+      expect(result).toEqual(mockDoc);
+      expect(result!.completedAt).toEqual(completedAt);
+    });
+
+    it('devrait retourner un document avec isLocked = true', async () => {
+      const mockDoc = {
+        _id: new Types.ObjectId(),
+        moduleId,
+        apprenantId,
+        progressPercentage: 0,
+        status: ProgressStatus.NOT_STARTED,
         isLocked: true,
       };
+      mockModuleProgressModel.findOne.mockResolvedValue(mockDoc);
 
-      mockModuleProgressModel.findOne.mockResolvedValue(lockedProgress);
+      const result = await service.getByModuleAndUser(moduleId, apprenantId);
 
-      const result = await service.getByModuleAndUser(mockModuleId, mockApprenantId);
-
-      expect(result?.status).toBe(ProgressStatus.LOCKED);
-      expect(result?.isLocked).toBe(true);
-    });
-  });
-
-  describe('create', () => {
-    it('should return placeholder message', () => {
-      const dto = {} as any;
-      const result = service.create(dto);
-      expect(result).toBe('This action adds a new moduleProgress');
-    });
-  });
-
-  describe('findAll', () => {
-    it('should return placeholder message', () => {
-      const result = service.findAll();
-      expect(result).toBe('This action returns all moduleProgress');
-    });
-  });
-
-  describe('findOne', () => {
-    it('should return placeholder message with correct id', () => {
-      const result = service.findOne(1);
-      expect(result).toBe('This action returns a #1 moduleProgress');
+      expect(result!.isLocked).toBe(true);
     });
 
-    it('should handle different ids', () => {
-      expect(service.findOne(999)).toBe('This action returns a #999 moduleProgress');
-    });
-  });
+    // ── Document non trouvé ──────────────────────────────────────
 
-  describe('remove', () => {
-    it('should return placeholder message with correct id', () => {
-      const result = service.remove(1);
-      expect(result).toBe('This action removes a #1 moduleProgress');
+    it('devrait retourner null si aucun document n\'existe', async () => {
+      mockModuleProgressModel.findOne.mockResolvedValue(null);
+
+      const result = await service.getByModuleAndUser(moduleId, apprenantId);
+
+      expect(result).toBeNull();
     });
 
-    it('should handle different ids', () => {
-      expect(service.remove(999)).toBe('This action removes a #999 moduleProgress');
+    it('devrait retourner undefined si le modèle retourne undefined', async () => {
+      mockModuleProgressModel.findOne.mockResolvedValue(undefined);
+
+      const result = await service.getByModuleAndUser(moduleId, apprenantId);
+
+      expect(result).toBeUndefined();
+    });
+
+    // ── IDs différents ───────────────────────────────────────────
+
+    it('ne devrait pas confondre deux apprenants différents', async () => {
+      const apprenantId1 = new Types.ObjectId();
+      const apprenantId2 = new Types.ObjectId();
+
+      const doc1 = { _id: new Types.ObjectId(), apprenantId: apprenantId1, progressPercentage: 30 };
+      const doc2 = { _id: new Types.ObjectId(), apprenantId: apprenantId2, progressPercentage: 70 };
+
+      mockModuleProgressModel.findOne
+        .mockResolvedValueOnce(doc1)
+        .mockResolvedValueOnce(doc2);
+
+      const result1 = await service.getByModuleAndUser(moduleId, apprenantId1);
+      const result2 = await service.getByModuleAndUser(moduleId, apprenantId2);
+
+      expect(result1!.progressPercentage).toBe(30);
+      expect(result2!.progressPercentage).toBe(70);
+      expect(mockModuleProgressModel.findOne).toHaveBeenCalledTimes(2);
+    });
+
+    it('ne devrait pas confondre deux modules différents', async () => {
+      const moduleId1 = new Types.ObjectId();
+      const moduleId2 = new Types.ObjectId();
+
+      const doc1 = { _id: new Types.ObjectId(), moduleId: moduleId1, progressPercentage: 20 };
+      const doc2 = { _id: new Types.ObjectId(), moduleId: moduleId2, progressPercentage: 90 };
+
+      mockModuleProgressModel.findOne
+        .mockResolvedValueOnce(doc1)
+        .mockResolvedValueOnce(doc2);
+
+      const result1 = await service.getByModuleAndUser(moduleId1, apprenantId);
+      const result2 = await service.getByModuleAndUser(moduleId2, apprenantId);
+
+      expect(result1!.progressPercentage).toBe(20);
+      expect(result2!.progressPercentage).toBe(90);
+    });
+
+    // ── Gestion des erreurs ──────────────────────────────────────
+
+    it('devrait propager une erreur MongoDB', async () => {
+      mockModuleProgressModel.findOne.mockRejectedValue(
+        new Error('MongoNetworkError'),
+      );
+
+      await expect(
+        service.getByModuleAndUser(moduleId, apprenantId),
+      ).rejects.toThrow('MongoNetworkError');
+    });
+
+    it('devrait propager une erreur de timeout', async () => {
+      mockModuleProgressModel.findOne.mockRejectedValue(
+        new Error('Operation timed out'),
+      );
+
+      await expect(
+        service.getByModuleAndUser(moduleId, apprenantId),
+      ).rejects.toThrow('Operation timed out');
+    });
+
+    it('devrait propager n\'importe quelle erreur inattendue', async () => {
+      mockModuleProgressModel.findOne.mockRejectedValue(
+        new Error('Unexpected error'),
+      );
+
+      await expect(
+        service.getByModuleAndUser(moduleId, apprenantId),
+      ).rejects.toThrow('Unexpected error');
     });
   });
 });
