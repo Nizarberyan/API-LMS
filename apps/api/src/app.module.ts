@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { QuizModule } from './quiz/quiz.module';
 import { QuestionModule } from './question/question.module';
 import { QuizAttemptModule } from './quizAttempt/quizAttempt.module';
@@ -19,7 +19,13 @@ import { ModuleProgressModule } from './module-progress/module-progress.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(process.env.MONGODB_URI || ''),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
     UsersModule,
     AuthModule,
     QuizModule,
@@ -35,4 +41,4 @@ import { ModuleProgressModule } from './module-progress/module-progress.module';
   controllers: [AppController, UploadsController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
